@@ -1,0 +1,168 @@
+import { Resend } from 'resend';
+import Redis from 'ioredis';
+import { siteConfig, products } from '../../../config/site';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Conexion a Redis
+let redis = null;
+function getRedisClient() {
+  if (!redis) {
+    redis = new Redis(process.env.REDIS_URL);
+  }
+  return redis;
+}
+
+// Obtener siguiente numero de cotizacion
+async function getNextQuoteNumber() {
+  try {
+    const client = getRedisClient();
+    const quoteNumber = await client.incr('tecnocarton:quote_counter');
+    return quoteNumber;
+  } catch (error) {
+    console.error('Error al obtener numero de cotizacion:', error);
+    // Fallback: usar timestamp si Redis no esta disponible
+    return Date.now();
+  }
+}
+
+export async function POST(request) {
+  try {
+    const body = await request.json();
+    const { producto, cantidad, medidas, empresa, email, telefono } = body;
+
+    // Validacion del servidor
+    const errors = {};
+
+    if (!producto) {
+      errors.producto = 'Debes seleccionar un producto';
+    }
+
+    if (!empresa || empresa.trim().length < 2) {
+      errors.empresa = 'El nombre de empresa es requerido';
+    }
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.email = 'Email invalido';
+    }
+
+    if (!telefono || telefono.replace(/\D/g, '').length < 8) {
+      errors.telefono = 'Telefono debe tener al menos 8 digitos';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      return Response.json({ success: false, errors }, { status: 400 });
+    }
+
+    // Buscar nombre del producto
+    const productInfo = products.find(p => p.id === producto);
+    const productName = productInfo ? productInfo.name : producto;
+
+    // Obtener numero correlativo
+    const quoteNumber = await getNextQuoteNumber();
+
+    // Preparar el email
+    const emailSubject = `Cotizacion #${quoteNumber} - ${productName} - ${empresa}`;
+
+    const emailHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #2E6A80, #3d8299); color: white; padding: 20px; border-radius: 8px 8px 0 0; }
+    .content { background: #f8f9fa; padding: 20px; border: 1px solid #e9ecef; }
+    .section { margin-bottom: 20px; }
+    .section-title { font-size: 12px; color: #6c757d; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; }
+    .field { margin-bottom: 12px; }
+    .field-label { font-weight: 600; color: #2E6A80; }
+    .field-value { color: #333; }
+    .footer { background: #2E6A80; color: white; padding: 15px 20px; border-radius: 0 0 8px 8px; font-size: 12px; }
+    .highlight { background: #EE7E31; color: white; padding: 4px 12px; border-radius: 4px; display: inline-block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1 style="margin: 0; font-size: 24px;">Solicitud de Cotizacion #${quoteNumber}</h1>
+      <p style="margin: 8px 0 0; opacity: 0.9;">Recibida desde tecnocarton.cl</p>
+    </div>
+
+    <div class="content">
+      <div class="section">
+        <div class="section-title">Producto Solicitado</div>
+        <div class="field">
+          <span class="highlight">${productName}</span>
+        </div>
+        <div class="field">
+          <span class="field-label">Cantidad:</span>
+          <span class="field-value">${cantidad || 'No especificada'}</span>
+        </div>
+        <div class="field">
+          <span class="field-label">Medidas/Especificaciones:</span>
+          <span class="field-value">${medidas || 'No especificadas'}</span>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Datos del Cliente</div>
+        <div class="field">
+          <span class="field-label">Empresa/Nombre:</span>
+          <span class="field-value">${empresa}</span>
+        </div>
+        <div class="field">
+          <span class="field-label">Email:</span>
+          <span class="field-value"><a href="mailto:${email}">${email}</a></span>
+        </div>
+        <div class="field">
+          <span class="field-label">Telefono:</span>
+          <span class="field-value"><a href="tel:${telefono}">${telefono}</a></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p style="margin: 0;">Para responder, simplemente responde a este email o usa el telefono del cliente.</p>
+      <p style="margin: 8px 0 0; opacity: 0.7;">Enviado desde el formulario de cotizacion de tecnocarton.cl</p>
+    </div>
+  </div>
+</body>
+</html>
+    `.trim();
+
+    // Enviar email con Resend
+    const { data, error } = await resend.emails.send({
+      from: 'Tecnocarton Web <cotizaciones@tecnocarton.cl>',
+      to: [siteConfig.form.recipientEmail],
+      replyTo: email,
+      subject: emailSubject,
+      html: emailHtml,
+    });
+
+    if (error) {
+      console.error('Error al enviar email:', error);
+      return Response.json(
+        { success: false, message: 'Error al enviar el email' },
+        { status: 500 }
+      );
+    }
+
+    console.log('Email enviado exitosamente:', data.id);
+
+    return Response.json({
+      success: true,
+      message: 'Cotizacion enviada correctamente',
+      emailId: data.id,
+      quoteNumber: quoteNumber
+    });
+
+  } catch (error) {
+    console.error('Error al procesar cotizacion:', error);
+    return Response.json(
+      { success: false, message: 'Error al procesar la solicitud' },
+      { status: 500 }
+    );
+  }
+}
