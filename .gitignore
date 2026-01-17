@@ -34,3 +34,6 @@ Thumbs.db
 # Misc
 *.log
 .vercel
+
+# Quote counter (local persistence)
+.quote-counter

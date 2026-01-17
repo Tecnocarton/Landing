@@ -1,12 +1,48 @@
+import { siteConfig } from '../config/site';
+
 export const metadata = {
-  title: 'Tecnocarton - Soluciones de Embalaje en Cartón Corrugado',
-  description: 'Fabricantes de cartón corrugado desde 2003. Planchas, rollos, cajas a medida, cajas autoarmables, esquineros y consumibles. Entrega en todo Chile.',
-}
+  title: siteConfig.seo.title,
+  description: siteConfig.seo.description,
+  keywords: siteConfig.seo.keywords,
+  authors: [{ name: siteConfig.company.name }],
+  creator: siteConfig.company.name,
+  openGraph: {
+    title: siteConfig.seo.title,
+    description: siteConfig.seo.description,
+    url: 'https://tecnocarton.cl',
+    siteName: siteConfig.company.name,
+    locale: 'es_CL',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: siteConfig.seo.title,
+    description: siteConfig.seo.description,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  icons: {
+    icon: '/favicon.png',
+    apple: '/favicon.png',
+  },
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#2E6A80',
+};
 
 export default function RootLayout({ children }) {
   return (
     <html lang="es">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
       <body style={{ margin: 0, padding: 0 }}>{children}</body>
     </html>
-  )
+  );
 }
