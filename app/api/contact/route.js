@@ -1,35 +1,63 @@
 import { Resend } from 'resend';
 import Redis from 'ioredis';
 import { siteConfig, products } from '../../../config/site';
+import fs from 'fs';
+import path from 'path';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Conexion a Redis
+// Conexion a Redis (produccion)
 let redis = null;
 function getRedisClient() {
-  if (!redis) {
-    redis = new Redis(process.env.REDIS_URL);
+  if (!redis && process.env.REDIS_URL) {
+    redis = new Redis(process.env.REDIS_URL, {
+      maxRetriesPerRequest: 1,
+      retryStrategy: () => null // No reintentar si falla
+    });
   }
   return redis;
 }
 
+// Archivo para persistir el contador cuando Redis no está disponible (desarrollo)
+const COUNTER_FILE = path.join(process.cwd(), '.quote-counter');
+
 // Obtener siguiente numero de cotizacion
 async function getNextQuoteNumber() {
+  // Intentar con Redis primero (produccion)
   try {
     const client = getRedisClient();
-    const quoteNumber = await client.incr('tecnocarton:quote_counter');
-    return quoteNumber;
+    if (client) {
+      const quoteNumber = await client.incr('tecnocarton:quote_counter');
+      return quoteNumber;
+    }
+  } catch (error) {
+    console.log('Redis no disponible, usando fallback local');
+  }
+
+  // Fallback: usar archivo local (desarrollo)
+  try {
+    let currentNumber = 0;
+
+    if (fs.existsSync(COUNTER_FILE)) {
+      const content = fs.readFileSync(COUNTER_FILE, 'utf8').trim();
+      currentNumber = parseInt(content, 10) || 0;
+    }
+
+    const nextNumber = currentNumber + 1;
+    fs.writeFileSync(COUNTER_FILE, nextNumber.toString(), 'utf8');
+
+    return nextNumber;
   } catch (error) {
     console.error('Error al obtener numero de cotizacion:', error);
-    // Fallback: usar timestamp si Redis no esta disponible
-    return Date.now();
+    // Ultimo fallback: número aleatorio pequeño
+    return Math.floor(Math.random() * 9000) + 1000;
   }
 }
 
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { producto, cantidad, medidas, empresa, email, telefono } = body;
+    const { producto, cantidad, tiposCarton, formatosRollo, detalle, empresa, email, telefono } = body;
 
     // Validacion del servidor
     const errors = {};
@@ -61,6 +89,20 @@ export async function POST(request) {
     // Obtener numero correlativo
     const quoteNumber = await getNextQuoteNumber();
 
+    // Formatear especificaciones segun producto
+    let especificaciones = '';
+    if (producto === 'planchas' && tiposCarton && tiposCarton.length > 0) {
+      especificaciones = `<div class="field">
+          <span class="field-label">Tipos de carton:</span>
+          <span class="field-value">${tiposCarton.join(', ')}</span>
+        </div>`;
+    } else if (producto === 'rollos' && formatosRollo && formatosRollo.length > 0) {
+      especificaciones = `<div class="field">
+          <span class="field-label">Formatos de rollo:</span>
+          <span class="field-value">${formatosRollo.map(f => f + ' kg').join(', ')}</span>
+        </div>`;
+    }
+
     // Preparar el email
     const emailSubject = `Cotizacion #${quoteNumber} - ${productName} - ${empresa}`;
 
@@ -81,6 +123,7 @@ export async function POST(request) {
     .field-value { color: #333; }
     .footer { background: #2E6A80; color: white; padding: 15px 20px; border-radius: 0 0 8px 8px; font-size: 12px; }
     .highlight { background: #EE7E31; color: white; padding: 4px 12px; border-radius: 4px; display: inline-block; }
+    .detalle-box { background: white; padding: 12px; border-radius: 6px; border-left: 3px solid #EE7E31; margin-top: 8px; }
   </style>
 </head>
 <body>
@@ -100,10 +143,11 @@ export async function POST(request) {
           <span class="field-label">Cantidad:</span>
           <span class="field-value">${cantidad || 'No especificada'}</span>
         </div>
-        <div class="field">
-          <span class="field-label">Medidas/Especificaciones:</span>
-          <span class="field-value">${medidas || 'No especificadas'}</span>
-        </div>
+        ${especificaciones}
+        ${detalle ? `<div class="field">
+          <span class="field-label">Detalles adicionales:</span>
+          <div class="detalle-box">${detalle.replace(/\n/g, '<br>')}</div>
+        </div>` : ''}
       </div>
 
       <div class="section">

@@ -10,17 +10,17 @@ export const siteConfig = {
   company: {
     name: 'Tecnocartón',
     legalName: 'Tecnocartón SpA',
-    description: 'Ingeniería en Embalaje. Soluciones de cartón corrugado con capacidad industrial y flexibilidad artesanal.',
+    description: 'Soluciones de cartón corrugado con capacidad industrial y flexibilidad artesanal.',
     foundedYear: 2003,
     logo: '/logotipo.png',
   },
 
   // Datos de contacto
   contact: {
-    email: 'ventas1@tecnocarton.cl',
-    phone: '+56 9 1234 5678', // Por confirmar con cliente
-    phoneClean: '+56912345678', // Sin espacios para links tel:
-    whatsapp: '+56912345678', // Por confirmar con cliente
+    email: 'ventas@tecnocarton.cl',
+    phone: '', // Por configurar
+    phoneClean: '', // Sin espacios para links tel:
+    whatsapp: '', // Por configurar
     whatsappMessage: 'Hola, me interesa cotizar productos de embalaje',
   },
 
@@ -33,18 +33,25 @@ export const siteConfig = {
     full: 'Las Violetas, Padre Hurtado, RM',
   },
 
-  // Redes sociales (completar URLs cuando estén disponibles)
+  // Redes sociales
   social: {
-    linkedin: '', // Por confirmar
+    linkedin: 'https://www.linkedin.com/company/tecnocarton/',
     instagram: '', // Por confirmar
     facebook: '', // Por confirmar
   },
 
   // Configuración del formulario
   form: {
-    recipientEmail: 'ventas1@tecnocarton.cl',
+    recipientEmail: 'ventas@tecnocarton.cl',
     emailSubjectPrefix: 'Cotización Web',
     responseTime: '24 horas hábiles',
+  },
+
+  // Configuración de reclutamiento
+  recruitment: {
+    recipientEmail: 'reclutamiento@tecnocarton.cl',
+    emailSubjectPrefix: 'Postulación Web',
+    responseTime: '5 días hábiles',
   },
 
   // SEO y metadata
@@ -69,13 +76,25 @@ export const products = [
   {
     id: 'planchas',
     name: 'Planchas Corrugadas',
-    desc: '12C, 17C, 20C',
+    desc: '12C, 14C, 17C, 20C',
+    minOrder: 'Mín. 1.500 unidades',
+    image: '/productos/plancha.png',
     available: true
   },
   {
     id: 'rollos',
     name: 'Rollos de Corrugado',
     desc: 'Múltiples gramajes',
+    minOrder: 'Mín. 300 kg',
+    image: '/productos/carton corrugado.png',
+    available: true
+  },
+  {
+    id: 'troquelado',
+    name: 'Cartón Troquelado',
+    desc: 'Diseños personalizados',
+    minOrder: 'Mín. 2.000 unidades',
+    image: '/productos/troquelado.png',
     available: true
   },
   {
@@ -91,37 +110,53 @@ export const products = [
     desc: 'Rápido armado',
     available: false,
     comingSoon: true
-  },
-  {
-    id: 'esquineros',
-    name: 'Esquineros',
-    desc: 'Protección extra',
-    available: true
-  },
-  {
-    id: 'consumibles',
-    name: 'Consumibles',
-    desc: 'Film, cintas, burbuja',
-    available: true
   }
 ];
 
 // Tipos de cartón
 export const cardboardTypes = [
-  { type: '12C (Sencillo)', weight: '~435 gr/m²', use: 'Productos ligeros' },
-  { type: '17C (Doble)', weight: '~473 gr/m²', use: 'Uso general' },
-  { type: '20C (Triple)', weight: '~619 gr/m²', use: 'Cargas pesadas' }
+  { type: '12C', weight: '~420 gr/m²', use: 'Productos ligeros' },
+  { type: '14C', weight: '~450 gr/m²', use: 'Uso medio' },
+  { type: '17C', weight: '~480 gr/m²', use: 'Uso general' },
+  { type: '20C', weight: '~610 gr/m²', use: 'Cargas pesadas' }
 ];
 
-// Pasos del proceso de producción
+// Pasos del proceso de producción (simplificado a 4 pasos)
 export const processSteps = [
-  { num: '01', title: 'Recepción de Materia Prima', desc: 'Bobinas de papel kraft y liner de proveedores certificados' },
-  { num: '02', title: 'Corrugado', desc: 'Formación de la onda mediante calor y presión controlados' },
-  { num: '03', title: 'Encolado y Laminado', desc: 'Unión de liners con adhesivo base almidón' },
-  { num: '04', title: 'Corte y Troquelado', desc: 'Precisión milimétrica según especificaciones' },
-  { num: '05', title: 'Control de Calidad', desc: 'Verificación de gramaje, resistencia y dimensiones' },
-  { num: '06', title: 'Despacho', desc: 'Entrega con flota propia en todo Chile' }
+  { num: '01', title: 'Materia Prima', desc: 'Bobinas de papel kraft y liner de proveedores certificados', icon: 'package' },
+  { num: '02', title: 'Corrugado y Laminado', desc: 'Formación de onda mediante calor y presión, unión con adhesivo base almidón', icon: 'layers' },
+  { num: '03', title: 'Corte y Control', desc: 'Corte de precisión milimétrica con verificación de gramaje y resistencia', icon: 'check-square' },
+  { num: '04', title: 'Despacho', desc: 'Entrega con flota propia en todo RM', icon: 'truck' }
 ];
+
+// Información de sostenibilidad (Ley REP)
+export const sustainability = {
+  title: 'Compromiso sustentable',
+  subtitle: 'Economía circular & Ley REP',
+  description: 'Nuestros productos están alineados con la ley de responsabilidad extendida del productor (REP), contribuyendo activamente a la economía circular.',
+  features: [
+    {
+      title: '100% Reciclable',
+      desc: 'Todo nuestro cartón corrugado es completamente reciclable',
+      icon: 'recycle'
+    },
+    {
+      title: 'Materia prima certificada',
+      desc: 'Utilizamos papel proveniente de bosques gestionados responsablemente',
+      icon: 'leaf'
+    },
+    {
+      title: 'Adhesivos naturales',
+      desc: 'Base almidón, biodegradables y seguros para el medio ambiente',
+      icon: 'droplet'
+    },
+    {
+      title: 'Cumplimiento Ley REP',
+      desc: 'Facilitamos el cumplimiento de metas de reciclaje para envases y embalajes',
+      icon: 'shield-check'
+    }
+  ]
+};
 
 // Casos de éxito
 export const caseStudies = [
@@ -148,22 +183,84 @@ export const caseStudies = [
   }
 ];
 
-// Sectores/industrias atendidas
-export const sectors = [
-  { name: 'E-commerce' },
-  { name: 'Repostería' },
-  { name: 'Vinos' },
-  { name: 'Manufactura' },
-  { name: 'Logística' },
-  { name: 'Construcción' },
-  { name: 'Mudanzas' },
-  { name: 'Alimentos' }
+// Empresas que confían en nosotros
+// El propietario puede agregar/quitar logos editando esta lista
+// Los logos deben estar en /public/clientes/
+export const clients = [
+  { name: 'La Polar', logo: '/clientes/La_Polar.svg' },
+  { name: '3R Pop', logo: '/clientes/3Rpop.png' },
+  { name: 'Cartones RYR', logo: '/clientes/cartones ryr.png' },
+  { name: 'CIC', logo: '/clientes/cic.jpeg' },
+  { name: 'Colbox', logo: '/clientes/colbox.png' },
+  { name: 'Copelec', logo: '/clientes/copelec.jpg' },
+  { name: 'Ecomat', logo: '/clientes/ecomat.jpg' },
+  { name: 'Ferretería Mueblista', logo: '/clientes/ferreteria_mueblista.png' },
+  { name: 'Idelab', logo: '/clientes/idelab.png' },
+  { name: 'Reminisen', logo: '/clientes/reminisen.jpg' },
+  { name: 'Tubexa', logo: '/clientes/tubexa.gif' }
 ];
 
 // Certificaciones de calidad
 export const qualityCertifications = [
-  { text: 'Control de Gramaje' },
-  { text: 'Prueba de Resistencia' },
-  { text: 'Precisión Dimensional' },
-  { text: 'Material Reciclable' }
+  { text: 'Control de gramaje' },
+  { text: 'Prueba de resistencia' },
+  { text: 'Precisión dimensional' },
+  { text: 'Material reciclable' }
+];
+
+// Ofertas laborales activas
+// El propietario puede editar esta lista para mostrar/ocultar ofertas
+export const jobOffers = [
+  {
+    id: 'operador-corrugadora',
+    title: 'Operador de corrugadora',
+    department: 'Producción',
+    type: 'Tiempo completo',
+    description: 'Buscamos operador con experiencia en máquinas corrugadoras para unirse a nuestro equipo de producción.',
+    requirements: [
+      'Experiencia mínima de 2 años en operación de maquinaria industrial',
+      'Conocimiento en calibración y ajuste de equipos',
+      'Licencia de conducir clase B',
+      'Educación media completa'
+    ],
+    active: true
+  },
+  {
+    id: 'ejecutivo-comercial',
+    title: 'Ejecutivo comercial',
+    department: 'Ventas',
+    type: 'Tiempo completo',
+    description: 'Únete a nuestro equipo comercial para desarrollar nuevos clientes y mantener relaciones con clientes existentes.',
+    requirements: [
+      'Experiencia en ventas B2B, idealmente en sector industrial',
+      'Excelentes habilidades de comunicación y negociación',
+      'Licencia de conducir clase B',
+      'Manejo de herramientas Office'
+    ],
+    active: true
+  },
+  {
+    id: 'Operador auxiliar',
+    title: 'Operador auxiliar',
+    department: 'Producción',
+    type: 'Tiempo completo',
+    description: 'Se requiere ayudante para labores de productivos, carga y descarga de materiales.',
+    requirements: [
+      'Educación media completa',
+      'Capacidad para trabajo físico',
+      'Responsable y puntual',
+      'Licencia de grúa horquilla'
+    ],
+    active: true // Ejemplo de oferta inactiva
+  }
+];
+
+// Cargos disponibles para postulación espontánea
+export const availablePositions = [
+  { id: 'operador', name: 'Operador auxiliar' },
+  { id: 'bodega', name: 'Logística' },
+  { id: 'vendedor', name: 'Vendedor/Ejecutivo Comercial' },
+  { id: 'administrativo', name: 'Administrativo' },
+  { id: 'mantencion', name: 'Técnico en Mantención' },
+  { id: 'otro', name: 'Otro' }
 ];
