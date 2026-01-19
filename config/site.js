@@ -1,5 +1,5 @@
 /**
- * Configuración del sitio Tecnocartón
+ * Configuración del sitio Tecnocarton
  *
  * Este archivo contiene todos los datos de contacto y configuración
  * que pueden ser editados fácilmente sin modificar el código.
@@ -8,8 +8,8 @@
 export const siteConfig = {
   // Información de la empresa
   company: {
-    name: 'Tecnocartón',
-    legalName: 'Tecnocartón SpA',
+    name: 'Tecnocarton',
+    legalName: 'Tecnocarton SpA',
     description: 'Soluciones de cartón corrugado con capacidad industrial y flexibilidad artesanal.',
     foundedYear: 2003,
     logo: '/logotipo.png',
@@ -56,7 +56,7 @@ export const siteConfig = {
 
   // SEO y metadata
   seo: {
-    title: 'Tecnocarton - Soluciones de embalaje',
+    title: 'Tecnocarton - Soluciones de embalaje en cartón corrugado',
     description: 'Fabricantes de cartón corrugado desde 2003. Planchas, rollos, cajas a medida, cajas autoarmables, esquineros y consumibles. Entrega en todo Chile.',
     keywords: 'cartón corrugado, embalaje, cajas, planchas corrugadas, Chile, packaging',
     ogImage: '/og-image.jpg',

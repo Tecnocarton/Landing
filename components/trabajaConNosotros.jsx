@@ -237,6 +237,42 @@ export default function TrabajaConNosotros() {
         @keyframes spin {
           to { transform: rotate(360deg); }
         }
+        /* Responsive Design */
+        @media (max-width: 768px) {
+          .benefits-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .jobs-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .section-padding {
+            padding: 60px 16px !important;
+          }
+          .hero-section {
+            padding: 120px 16px 60px !important;
+          }
+          .form-card {
+            padding: 24px !important;
+          }
+          .nav-container {
+            padding: 12px 16px !important;
+          }
+        }
+        @media (max-width: 500px) {
+          .hero-section {
+            padding: 100px 12px 40px !important;
+          }
+          .form-card {
+            padding: 16px !important;
+          }
+          .btn-primary, .btn-secondary {
+            padding: 12px 24px;
+            font-size: 14px;
+          }
+          .benefits-grid {
+            gap: 16px !important;
+          }
+        }
       ` }} />
 
       {/* Header */}
@@ -254,7 +290,7 @@ export default function TrabajaConNosotros() {
           boxShadow: '0 2px 20px rgba(0,0,0,0.1)'
         }}
       >
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="nav-container" style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
             <img
               src={siteConfig.company.logo}
@@ -275,7 +311,7 @@ export default function TrabajaConNosotros() {
       </motion.nav>
 
       {/* Hero */}
-      <section style={{
+      <section className="hero-section" style={{
         background: 'linear-gradient(135deg, #2E6A80 0%, #1a4a5c 100%)',
         padding: '140px 24px 80px',
         textAlign: 'center'
@@ -307,7 +343,7 @@ export default function TrabajaConNosotros() {
       </section>
 
       {/* Benefits */}
-      <section style={{ padding: '60px 24px', background: 'white' }}>
+      <section className="section-padding" style={{ padding: '60px 24px', background: 'white' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <motion.div
             initial="hidden"
@@ -328,6 +364,7 @@ export default function TrabajaConNosotros() {
             whileInView="visible"
             viewport={{ once: true, margin: '-50px' }}
             variants={staggerContainer}
+            className="benefits-grid"
             style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 24 }}
           >
             {[
@@ -358,7 +395,7 @@ export default function TrabajaConNosotros() {
 
       {/* Job Offers Section */}
       {activeOffers.length > 0 && (
-        <section style={{ padding: '60px 24px', background: '#F8FAFB' }}>
+        <section className="section-padding" style={{ padding: '60px 24px', background: '#F8FAFB' }}>
           <div style={{ maxWidth: 1000, margin: '0 auto' }}>
             <motion.div
               initial="hidden"
@@ -384,6 +421,7 @@ export default function TrabajaConNosotros() {
               whileInView="visible"
               viewport={{ once: true, margin: '-50px' }}
               variants={staggerContainer}
+              className="jobs-grid"
               style={{ display: 'grid', gap: 24 }}
             >
               {activeOffers.map((offer) => (
@@ -510,7 +548,7 @@ export default function TrabajaConNosotros() {
       )}
 
       {/* Form Section */}
-      <section id="postular" style={{ padding: '60px 24px 80px' }}>
+      <section id="postular" className="section-padding" style={{ padding: '60px 24px 80px' }}>
         <div style={{ maxWidth: 700, margin: '0 auto' }}>
           <motion.div
             initial="hidden"
@@ -540,7 +578,7 @@ export default function TrabajaConNosotros() {
             viewport={{ once: true, margin: '-50px' }}
             variants={scaleIn}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="card"
+            className="card form-card"
             style={{ padding: 40 }}
           >
             {formStatus.error && (
