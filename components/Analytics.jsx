@@ -3,7 +3,7 @@
 
 import Script from 'next/script';
 import { useEffect } from 'react';
-import { initializeFirebase } from '@/lib/firebase-client';
+import { initializeFirebase } from '../lib/firebase-client';
 
 export default function Analytics() {
   const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
