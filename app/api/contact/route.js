@@ -6,6 +6,28 @@ import path from 'path';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// Security: Email regex validation (hoisted for performance)
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Security: Sanitize input to prevent XSS
+function sanitizeInput(str) {
+  if (typeof str !== 'string') return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .trim()
+    .slice(0, 1000); // Limit length
+}
+
+// Security: Validate and sanitize phone number
+function sanitizePhone(phone) {
+  if (typeof phone !== 'string') return '';
+  return phone.replace(/[^\d\s\-+()]/g, '').slice(0, 20);
+}
+
 // Conexion a Redis (produccion)
 let redis = null;
 function getRedisClient() {
@@ -57,20 +79,33 @@ async function getNextQuoteNumber() {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { producto, cantidad, tiposCarton, formatosRollo, detalle, empresa, email, telefono } = body;
 
-    // Validacion del servidor
+    // Security: Sanitize all inputs
+    const producto = sanitizeInput(body.producto || '');
+    const cantidad = sanitizeInput(body.cantidad || '');
+    const tiposCarton = Array.isArray(body.tiposCarton)
+      ? body.tiposCarton.map(t => sanitizeInput(t)).slice(0, 10)
+      : [];
+    const formatosRollo = Array.isArray(body.formatosRollo)
+      ? body.formatosRollo.map(f => sanitizeInput(f)).slice(0, 10)
+      : [];
+    const detalle = sanitizeInput(body.detalle || '');
+    const empresa = sanitizeInput(body.empresa || '');
+    const email = sanitizeInput(body.email || '').toLowerCase();
+    const telefono = sanitizePhone(body.telefono || '');
+
+    // Server-side validation
     const errors = {};
 
     if (!producto) {
       errors.producto = 'Debes seleccionar un producto';
     }
 
-    if (!empresa || empresa.trim().length < 2) {
+    if (!empresa || empresa.length < 2) {
       errors.empresa = 'El nombre de empresa es requerido';
     }
 
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!email || !EMAIL_REGEX.test(email)) {
       errors.email = 'Email invalido';
     }
 

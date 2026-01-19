@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   siteConfig,
@@ -10,7 +10,7 @@ import {
   clients
 } from '../config/site';
 
-// Animation variants
+// Animation variants - hoisted outside component (rendering-hoist-jsx)
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 }
@@ -20,16 +20,16 @@ const staggerContainer = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.1 }
+    transition: { staggerChildren: 0.08, delayChildren: 0.1 }
   }
 };
 
 const scaleIn = {
-  hidden: { opacity: 0, scale: 0.9 },
+  hidden: { opacity: 0, scale: 0.95 },
   visible: { opacity: 1, scale: 1 }
 };
 
-// Custom hook for intersection observer animations
+// Custom hook for intersection observer - optimized with passive listener
 const useInView = (threshold = 0.1) => {
   const [ref, setRef] = useState(null);
   const [isInView, setIsInView] = useState(false);
@@ -38,7 +38,7 @@ const useInView = (threshold = 0.1) => {
     if (!ref) return;
     const observer = new IntersectionObserver(
       ([entry]) => setIsInView(entry.isIntersecting),
-      { threshold }
+      { threshold, rootMargin: '50px' }
     );
     observer.observe(ref);
     return () => observer.disconnect();
@@ -47,8 +47,8 @@ const useInView = (threshold = 0.1) => {
   return [setRef, isInView];
 };
 
-// Animated counter component
-const Counter = ({ end, suffix = '', duration = 2000 }) => {
+// Memoized Counter component (rerender-memo)
+const Counter = memo(({ end, suffix = '', duration = 2000 }) => {
   const [count, setCount] = useState(0);
   const [ref, isInView] = useInView();
 
@@ -69,9 +69,79 @@ const Counter = ({ end, suffix = '', duration = 2000 }) => {
   }, [isInView, end, duration]);
 
   return <span ref={ref}>{count}{suffix}</span>;
-};
+});
 
-// Smooth scroll function
+Counter.displayName = 'Counter';
+
+// Memoized StatCard component for rerender optimization
+const StatCard = memo(({ stat }) => (
+  <motion.div
+    variants={fadeInUp}
+    whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(46,106,128,0.2)' }}
+    transition={{ duration: 0.3 }}
+    className="card stat-card"
+    style={{
+      padding: 24,
+      background: 'rgba(255,255,255,0.95)',
+      textAlign: 'center'
+    }}
+  >
+    <div className="stat-number" style={{ fontSize: 36, fontWeight: 900, color: '#2E6A80', marginBottom: 8 }}>
+      {stat.isText ? stat.value : <Counter end={stat.value} suffix={stat.suffix} />}
+    </div>
+    <div style={{ fontSize: 14, color: '#6B7280', fontWeight: 500 }}>
+      {stat.label}
+    </div>
+  </motion.div>
+));
+
+StatCard.displayName = 'StatCard';
+
+// Memoized ProductCard component
+const ProductCard = memo(({ product }) => (
+  <motion.div
+    variants={fadeInUp}
+    whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(46,106,128,0.15)' }}
+    transition={{ duration: 0.3 }}
+    className="card"
+    style={{
+      padding: 20,
+      textAlign: 'center',
+      position: 'relative',
+      background: 'white'
+    }}
+  >
+    {!product.available && (
+      <div className="coming-soon-badge">Coming Soon</div>
+    )}
+    <div style={{
+      width: 64,
+      height: 64,
+      background: 'linear-gradient(135deg, #EE7E31, #f5a66d)',
+      borderRadius: 12,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      margin: '0 auto 16px',
+      fontSize: 32
+    }}>
+      📦
+    </div>
+    <h4 style={{ fontSize: 16, fontWeight: 700, color: '#2E6A80', marginBottom: 8 }}>
+      {product.name}
+    </h4>
+    <p style={{ fontSize: 12, color: '#6B7280', marginBottom: 12 }}>
+      {product.desc}
+    </p>
+    <div style={{ fontSize: 11, color: '#EE7E31', fontWeight: 600 }}>
+      {product.minOrder}
+    </div>
+  </motion.div>
+));
+
+ProductCard.displayName = 'ProductCard';
+
+// Smooth scroll function - hoisted outside component
 const scrollToSection = (e, sectionId) => {
   e.preventDefault();
   const element = document.getElementById(sectionId);
@@ -79,6 +149,9 @@ const scrollToSection = (e, sectionId) => {
     element.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 };
+
+// Email validation regex - hoisted outside component (js-hoist-regexp)
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function TecnocartonLanding() {
   const [activeStep, setActiveStep] = useState(0);
@@ -100,9 +173,10 @@ export default function TecnocartonLanding() {
 
   const carouselImages = ['/img1.jpeg', '/img2.jpeg'];
 
+  // Passive scroll listener for better performance (client-passive-event-listeners)
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -125,7 +199,7 @@ export default function TecnocartonLanding() {
     return () => document.removeEventListener('click', handleClickOutside);
   }, [isMenuOpen]);
 
-  // Form validation
+  // Form validation - using hoisted EMAIL_REGEX (js-hoist-regexp)
   const validateField = useCallback((name, value) => {
     switch (name) {
       case 'empresa':
@@ -134,7 +208,7 @@ export default function TecnocartonLanding() {
         }
         break;
       case 'email':
-        if (!value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        if (!value || !EMAIL_REGEX.test(value)) {
           return 'Ingresa un email válido';
         }
         break;
@@ -171,7 +245,7 @@ export default function TecnocartonLanding() {
     // Validate all required fields
     const errors = {};
     if (!formData.empresa) errors.empresa = 'Requerido';
-    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    if (!formData.email || !EMAIL_REGEX.test(formData.email)) {
       errors.email = 'Email invalido';
     }
     if (!formData.telefono || formData.telefono.replace(/\D/g, '').length < 8) {
@@ -231,24 +305,59 @@ export default function TecnocartonLanding() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', background: '#FAFAFA', minHeight: '100vh' }}>
-      {/* CSS Animations */}
+    <div style={{ fontFamily: "'DM Sans', 'Segoe UI', system-ui, sans-serif", background: '#FAFBFC', minHeight: '100vh' }}>
+      {/* Professional Typography & Design System */}
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
+        :root {
+          --color-primary: #1B4D5C;
+          --color-primary-light: #2E6A80;
+          --color-primary-dark: #0F3540;
+          --color-accent: #E67635;
+          --color-accent-light: #F29559;
+          --color-accent-dark: #C45A1A;
+          --color-surface: #FFFFFF;
+          --color-surface-elevated: #FAFBFC;
+          --color-text: #1A2B32;
+          --color-text-muted: #5A6B73;
+          --color-text-subtle: #8A9BA3;
+          --color-border: #E2E8EC;
+          --color-border-light: #F0F3F5;
+          --shadow-sm: 0 1px 2px rgba(27, 77, 92, 0.04);
+          --shadow-md: 0 4px 12px rgba(27, 77, 92, 0.08);
+          --shadow-lg: 0 8px 30px rgba(27, 77, 92, 0.12);
+          --shadow-xl: 0 20px 50px rgba(27, 77, 92, 0.15);
+          --radius-sm: 6px;
+          --radius-md: 12px;
+          --radius-lg: 20px;
+          --radius-xl: 28px;
+        }
+
+        * {
+          font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+          font-family: 'Plus Jakarta Sans', 'DM Sans', system-ui, sans-serif;
+          letter-spacing: -0.02em;
+        }
+
         @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(30px); }
+          from { opacity: 0; transform: translateY(24px); }
           to { opacity: 1; transform: translateY(0); }
         }
         @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
+          0%, 100% { transform: translateY(0) rotate(0deg); }
+          50% { transform: translateY(-8px) rotate(1deg); }
         }
         @keyframes pulse {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.05); }
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.02); opacity: 0.9; }
         }
-        @keyframes slideIn {
-          from { opacity: 0; transform: translateX(-20px); }
-          to { opacity: 1; transform: translateX(0); }
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
         }
         @keyframes gradient {
           0% { background-position: 0% 50%; }
@@ -259,149 +368,280 @@ export default function TecnocartonLanding() {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
         }
-        .animate-fadeIn { animation: fadeInUp 0.8s ease forwards; }
-        .animate-float { animation: float 3s ease-in-out infinite; }
-        .animate-pulse { animation: pulse 2s ease-in-out infinite; }
-        .hover-lift { transition: transform 0.3s, box-shadow 0.3s; }
-        .hover-lift:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(46,106,128,0.15); }
+        @keyframes glow {
+          0%, 100% { box-shadow: 0 0 20px rgba(230, 118, 53, 0.3); }
+          50% { box-shadow: 0 0 40px rgba(230, 118, 53, 0.5); }
+        }
+
+        .animate-fadeIn { animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+        .animate-pulse { animation: pulse 3s ease-in-out infinite; }
+
         .gradient-text {
-          background: linear-gradient(135deg, #2E6A80 0%, #EE7E31 100%);
+          background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
         }
+
+        .gradient-text-subtle {
+          background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary-light) 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
         .btn-primary {
-          background: linear-gradient(135deg, #EE7E31 0%, #d66a1f 100%);
+          background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
           color: white;
           border: none;
           padding: 16px 32px;
-          border-radius: 8px;
-          font-weight: 700;
-          font-size: 16px;
+          border-radius: var(--radius-md);
+          font-weight: 600;
+          font-size: 15px;
           cursor: pointer;
-          transition: all 0.3s;
-          box-shadow: 0 4px 15px rgba(238,126,49,0.3);
+          transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+          box-shadow: 0 4px 14px rgba(230, 118, 53, 0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+          position: relative;
+          overflow: hidden;
+        }
+        .btn-primary::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+          transition: left 0.5s;
+        }
+        .btn-primary:hover::before {
+          left: 100%;
         }
         .btn-primary:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(238,126,49,0.4);
+          transform: translateY(-3px);
+          box-shadow: 0 8px 25px rgba(230, 118, 53, 0.45), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+        .btn-primary:active {
+          transform: translateY(-1px);
         }
         .btn-primary:disabled {
           opacity: 0.6;
           cursor: not-allowed;
           transform: none;
+          box-shadow: none;
         }
+
         .btn-secondary {
           background: transparent;
-          color: #2E6A80;
-          border: 2px solid #2E6A80;
-          padding: 14px 30px;
-          border-radius: 8px;
+          color: var(--color-primary);
+          border: 2px solid var(--color-primary);
+          padding: 14px 28px;
+          border-radius: var(--radius-md);
           font-weight: 600;
-          font-size: 16px;
+          font-size: 15px;
           cursor: pointer;
-          transition: all 0.3s;
+          transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+          position: relative;
+          overflow: hidden;
+        }
+        .btn-secondary::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: var(--color-primary);
+          transform: scaleX(0);
+          transform-origin: right;
+          transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+          z-index: -1;
+        }
+        .btn-secondary:hover::before {
+          transform: scaleX(1);
+          transform-origin: left;
         }
         .btn-secondary:hover {
-          background: #2E6A80;
           color: white;
+          border-color: var(--color-primary);
         }
+
         .card {
-          background: white;
-          border-radius: 16px;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-          transition: all 0.3s;
+          background: var(--color-surface);
+          border-radius: var(--radius-lg);
+          box-shadow: var(--shadow-md);
+          transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+          border: 1px solid var(--color-border-light);
         }
         .card:hover {
-          box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+          box-shadow: var(--shadow-xl);
+          transform: translateY(-4px);
         }
-        .process-line {
-          position: absolute;
-          top: 40px;
-          left: 0;
-          right: 0;
-          height: 2px;
-          background: linear-gradient(90deg, #2E6A80, #EE7E31);
+
+        .card-glass {
+          background: rgba(255, 255, 255, 0.85);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.5);
         }
+
         input, select, textarea {
           width: 100%;
-          padding: 14px 18px;
-          border: 2px solid #E0E0E0;
-          border-radius: 8px;
+          padding: 16px 20px;
+          border: 2px solid var(--color-border);
+          border-radius: var(--radius-md);
           font-size: 15px;
-          transition: all 0.3s;
-          background: white;
+          transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+          background: var(--color-surface);
           box-sizing: border-box;
           font-family: inherit;
+          color: var(--color-text);
+        }
+        input::placeholder, textarea::placeholder {
+          color: var(--color-text-subtle);
         }
         input:focus, select:focus, textarea:focus {
           outline: none;
-          border-color: #2E6A80;
-          box-shadow: 0 0 0 3px rgba(46,106,128,0.1);
+          border-color: var(--color-primary);
+          box-shadow: 0 0 0 4px rgba(27, 77, 92, 0.1);
         }
         input.error, textarea.error {
-          border-color: #EF4444;
+          border-color: #DC2626;
+          box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
         }
+
         .nav-link {
-          color: #2E6A80;
+          color: var(--color-primary);
           text-decoration: none;
           font-weight: 500;
-          padding: 8px 16px;
-          border-radius: 6px;
-          transition: all 0.3s;
+          padding: 10px 18px;
+          border-radius: var(--radius-sm);
+          transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+          position: relative;
+        }
+        .nav-link::after {
+          content: '';
+          position: absolute;
+          bottom: 6px;
+          left: 18px;
+          right: 18px;
+          height: 2px;
+          background: var(--color-accent);
+          transform: scaleX(0);
+          transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .nav-link:hover::after {
+          transform: scaleX(1);
         }
         .nav-link:hover {
-          background: rgba(46,106,128,0.1);
+          color: var(--color-primary-dark);
         }
+
         .mobile-menu {
           display: none;
           position: absolute;
           top: 100%;
           left: 0;
           right: 0;
-          background: white;
-          padding: 16px;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+          background: rgba(255, 255, 255, 0.98);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          padding: 20px;
+          box-shadow: var(--shadow-lg);
           flex-direction: column;
           gap: 8px;
+          border-top: 1px solid var(--color-border-light);
         }
         .mobile-menu.open {
           display: flex;
         }
+
         .hamburger {
           display: none;
           flex-direction: column;
           gap: 5px;
           cursor: pointer;
-          padding: 8px;
+          padding: 10px;
+          border-radius: var(--radius-sm);
+          transition: background 0.3s;
+        }
+        .hamburger:hover {
+          background: rgba(27, 77, 92, 0.05);
         }
         .hamburger span {
           display: block;
-          width: 24px;
+          width: 22px;
           height: 2px;
-          background: #2E6A80;
-          transition: all 0.3s;
+          background: var(--color-primary);
+          transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+          border-radius: 2px;
         }
         .hamburger.open span:nth-child(1) {
           transform: rotate(45deg) translate(5px, 5px);
         }
         .hamburger.open span:nth-child(2) {
           opacity: 0;
+          transform: scaleX(0);
         }
         .hamburger.open span:nth-child(3) {
           transform: rotate(-45deg) translate(5px, -5px);
         }
+
         .coming-soon-badge {
           position: absolute;
-          top: 8px;
-          right: 8px;
-          background: linear-gradient(135deg, #8B5CF6, #6366F1);
+          top: 12px;
+          right: 12px;
+          background: linear-gradient(135deg, #7C3AED, #5B21B6);
           color: white;
           font-size: 10px;
           font-weight: 700;
-          padding: 4px 8px;
-          border-radius: 4px;
+          padding: 5px 10px;
+          border-radius: var(--radius-sm);
           text-transform: uppercase;
+          letter-spacing: 0.5px;
+          box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+        }
+
+        .section-label {
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--color-accent);
+          text-transform: uppercase;
+          letter-spacing: 2px;
+          margin-bottom: 12px;
+          display: inline-block;
+        }
+
+        .noise-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          opacity: 0.03;
+          pointer-events: none;
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+          .hero-grid {
+            grid-template-columns: 1fr !important;
+            gap: 40px !important;
+          }
+          .stats-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+          .footer-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 32px !important;
+          }
+          .quote-section-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .case-studies-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
         }
         @media (max-width: 768px) {
           .desktop-nav {
@@ -416,10 +656,76 @@ export default function TecnocartonLanding() {
           .mobile-menu.open {
             display: flex;
           }
+          .hero-grid {
+            padding: 100px 16px 60px !important;
+            gap: 32px !important;
+          }
+          .stats-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 12px !important;
+          }
+          .value-grid, .products-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .footer-grid {
+            grid-template-columns: 1fr !important;
+            text-align: center;
+          }
+          .footer-grid > div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+          .section-padding {
+            padding: 60px 16px !important;
+          }
+          .quote-form-card {
+            padding: 24px !important;
+          }
+          .case-studies-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .clients-section {
+            padding: 40px 16px !important;
+          }
         }
         @media (max-width: 500px) {
           .step-label {
             display: none;
+          }
+          .hero-grid {
+            padding: 90px 12px 40px !important;
+          }
+          .stats-grid {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+          }
+          .stat-card {
+            padding: 16px !important;
+          }
+          .stat-number {
+            font-size: 28px !important;
+          }
+          .btn-primary, .btn-secondary {
+            padding: 12px 24px;
+            font-size: 14px;
+          }
+          .section-title {
+            font-size: 24px !important;
+          }
+          .quote-form-card {
+            padding: 16px !important;
+            margin: 0 -8px;
+            border-radius: 12px !important;
+          }
+          .form-buttons {
+            flex-direction: column !important;
+          }
+          .form-buttons button {
+            width: 100% !important;
+          }
+          .cardboard-info-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
           }
         }
         html {
@@ -539,49 +845,83 @@ export default function TecnocartonLanding() {
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 opacity: currentSlide === index ? 1 : 0,
-                transition: 'opacity 1.5s ease-in-out'
+                transition: 'opacity 1.8s cubic-bezier(0.22, 1, 0.36, 1)',
+                transform: currentSlide === index ? 'scale(1)' : 'scale(1.05)'
               }}
             />
           ))}
-          {/* Dark overlay for better text readability */}
+          {/* Sophisticated dark overlay with gradient */}
           <div style={{
             position: 'absolute',
             top: 0,
             left: 0,
             width: '100%',
             height: '100%',
-            background: 'linear-gradient(135deg, rgba(46,106,128,0.85) 0%, rgba(26,74,92,0.85) 50%, rgba(46,106,128,0.85) 100%)'
+            background: 'linear-gradient(135deg, rgba(27,77,92,0.92) 0%, rgba(15,53,64,0.88) 50%, rgba(27,77,92,0.9) 100%)'
+          }} />
+          {/* Subtle noise texture overlay */}
+          <div className="noise-overlay" />
+          {/* Decorative gradient orbs */}
+          <div style={{
+            position: 'absolute',
+            top: '10%',
+            right: '10%',
+            width: 400,
+            height: 400,
+            background: 'radial-gradient(circle, rgba(230,118,53,0.15) 0%, transparent 70%)',
+            borderRadius: '50%',
+            filter: 'blur(60px)',
+            pointerEvents: 'none'
+          }} />
+          <div style={{
+            position: 'absolute',
+            bottom: '20%',
+            left: '5%',
+            width: 300,
+            height: 300,
+            background: 'radial-gradient(circle, rgba(46,106,128,0.2) 0%, transparent 70%)',
+            borderRadius: '50%',
+            filter: 'blur(50px)',
+            pointerEvents: 'none'
           }} />
         </div>
 
-        {/* Carousel indicators */}
+        {/* Carousel indicators - refined design */}
         <div style={{
           position: 'absolute',
-          bottom: 40,
+          bottom: 48,
           left: '50%',
           transform: 'translateX(-50%)',
           display: 'flex',
-          gap: 12,
-          zIndex: 2
+          gap: 10,
+          zIndex: 2,
+          padding: '8px 16px',
+          background: 'rgba(255,255,255,0.1)',
+          borderRadius: 24,
+          backdropFilter: 'blur(10px)'
         }}>
           {carouselImages.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
+              aria-label={`Slide ${index + 1}`}
               style={{
-                width: currentSlide === index ? 32 : 12,
-                height: 12,
-                borderRadius: 6,
+                width: currentSlide === index ? 28 : 10,
+                height: 10,
+                borderRadius: 5,
                 border: 'none',
-                background: currentSlide === index ? '#EE7E31' : 'rgba(255,255,255,0.5)',
+                background: currentSlide === index
+                  ? 'linear-gradient(135deg, #E67635 0%, #F29559 100%)'
+                  : 'rgba(255,255,255,0.4)',
                 cursor: 'pointer',
-                transition: 'all 0.3s ease'
+                transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
+                boxShadow: currentSlide === index ? '0 2px 8px rgba(230,118,53,0.4)' : 'none'
               }}
             />
           ))}
         </div>
 
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '120px 24px 80px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 60, alignItems: 'center', position: 'relative', zIndex: 1 }}>
+        <div className="hero-grid" style={{ maxWidth: 1200, margin: '0 auto', padding: '120px 24px 80px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 60, alignItems: 'center', position: 'relative', zIndex: 1 }}>
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -618,8 +958,8 @@ export default function TecnocartonLanding() {
                 marginBottom: 24
               }}
             >
-              Soluciones de Embalaje en{' '}
-              <span style={{ color: '#EE7E31' }}>Cartón Corrugado</span>
+              Soluciones de embalaje en{' '}
+              <span style={{ color: '#EE7E31' }}>cartón corrugado</span>
             </motion.h1>
 
             <motion.p
@@ -701,36 +1041,18 @@ export default function TecnocartonLanding() {
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
+            className="stats-grid"
             style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}
           >
             {stats.map((stat, i) => (
-              <motion.div
-                key={i}
-                variants={fadeInUp}
-                whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(46,106,128,0.2)' }}
-                transition={{ duration: 0.3 }}
-                className="card"
-                style={{
-                  padding: 24,
-                  background: 'rgba(255,255,255,0.95)'
-                }}
-              >
-                <div style={{ fontSize: 36, fontWeight: 900, color: '#2E6A80' }}>
-                  {stat.isText ? (
-                    <span>{stat.value}{stat.suffix}</span>
-                  ) : (
-                    <Counter end={stat.value} suffix={stat.suffix} />
-                  )}
-                </div>
-                <div style={{ fontSize: 14, color: '#8E9DA6', fontWeight: 500 }}>{stat.label}</div>
-              </motion.div>
+              <StatCard key={i} stat={stat} />
             ))}
           </motion.div>
         </div>
       </section>
 
       {/* Value Proposition */}
-      <section style={{ padding: '80px 24px', background: 'white' }}>
+      <section className="section-padding" style={{ padding: '80px 24px', background: 'white' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <motion.div
             initial="hidden"
@@ -753,6 +1075,7 @@ export default function TecnocartonLanding() {
             whileInView="visible"
             viewport={{ once: true, margin: '-50px' }}
             variants={staggerContainer}
+            className="value-grid"
             style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 24 }}
           >
             {[
@@ -795,7 +1118,7 @@ export default function TecnocartonLanding() {
       </section>
 
       {/* Products Section */}
-      <section id="productos" style={{ padding: '80px 24px', background: '#F8FAFB' }}>
+      <section id="productos" className="section-padding" style={{ padding: '80px 24px', background: '#F8FAFB' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <motion.div
             initial="hidden"
@@ -818,6 +1141,7 @@ export default function TecnocartonLanding() {
             whileInView="visible"
             viewport={{ once: true, margin: '-50px' }}
             variants={staggerContainer}
+            className="products-grid"
             style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 20 }}
           >
             {products.map((product, i) => (
@@ -914,6 +1238,7 @@ export default function TecnocartonLanding() {
               whileInView="visible"
               viewport={{ once: true }}
               variants={staggerContainer}
+              className="cardboard-info-grid"
               style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 24 }}
             >
               {cardboardTypes.map((item, i) => (
@@ -940,7 +1265,7 @@ export default function TecnocartonLanding() {
       </section>
 
       {/* Case Studies Section */}
-      <section id="casos" style={{ padding: '80px 24px', background: '#F8FAFB' }}>
+      <section id="casos" className="section-padding" style={{ padding: '80px 24px', background: '#F8FAFB' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <motion.div
             initial="hidden"
@@ -963,6 +1288,7 @@ export default function TecnocartonLanding() {
             whileInView="visible"
             viewport={{ once: true, margin: '-50px' }}
             variants={staggerContainer}
+            className="case-studies-grid"
             style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}
           >
             {caseStudies.map((study, i) => (
@@ -1043,7 +1369,7 @@ export default function TecnocartonLanding() {
       </section>
 
       {/* Quote Form Section */}
-      <section id="cotizar" style={{
+      <section id="cotizar" className="section-padding" style={{
         padding: '80px 24px',
         background: 'linear-gradient(135deg, #2E6A80 0%, #1a4a5c 100%)',
         position: 'relative'
@@ -1102,7 +1428,7 @@ export default function TecnocartonLanding() {
             viewport={{ once: true, margin: '-50px' }}
             variants={scaleIn}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="card"
+            className="card quote-form-card"
             style={{ padding: 40 }}
           >
             <AnimatePresence mode="wait">
@@ -1332,7 +1658,7 @@ export default function TecnocartonLanding() {
                         />
                       </div>
                     </div>
-                    <div style={{ display: 'flex', gap: 16, marginTop: 32 }}>
+                    <div className="form-buttons" style={{ display: 'flex', gap: 16, marginTop: 32 }}>
                       <button className="btn-secondary" onClick={() => setActiveStep(0)}>
                         ← Volver
                       </button>
@@ -1416,7 +1742,7 @@ export default function TecnocartonLanding() {
                         </div>
                       </div>
                     </div>
-                    <div style={{ display: 'flex', gap: 16, marginTop: 32 }}>
+                    <div className="form-buttons" style={{ display: 'flex', gap: 16, marginTop: 32 }}>
                       <button className="btn-secondary" onClick={() => setActiveStep(1)}>
                         ← Volver
                       </button>
@@ -1485,7 +1811,7 @@ export default function TecnocartonLanding() {
                 allowFullScreen=""
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Ubicación Tecnocartón"
+                title="Ubicación Tecnocarton"
               />
             </div>
             {/* Address info */}
@@ -1544,7 +1870,7 @@ export default function TecnocartonLanding() {
                     <div style={{ fontWeight: 600, color: '#374151', marginBottom: 4 }}>Horario</div>
                     <div style={{ color: '#6B7280', lineHeight: 1.5 }}>
                       Lunes a Viernes<br />
-                      08:00 - 18:00 hrs
+                      08:00 - 17:30 hrs
                     </div>
                   </div>
                 </div>
@@ -1577,7 +1903,7 @@ export default function TecnocartonLanding() {
       </section>
 
       {/* Clients Section */}
-      <section style={{ padding: '100px 24px', background: '#F8FAFB', overflow: 'hidden' }}>
+      <section className="clients-section" style={{ padding: '100px 24px', background: '#F8FAFB', overflow: 'hidden' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <motion.div
             initial="hidden"
@@ -1679,6 +2005,7 @@ export default function TecnocartonLanding() {
             whileInView="visible"
             viewport={{ once: true }}
             variants={staggerContainer}
+            className="footer-grid"
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',

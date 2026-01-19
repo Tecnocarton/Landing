@@ -42,6 +42,7 @@ const scaleIn = {
 export default function Proceso() {
   const [scrolled, setScrolled] = useState(false);
   const [currentYear, setCurrentYear] = useState('');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -110,6 +111,78 @@ export default function Proceso() {
         .nav-link:hover {
           background: rgba(46,106,128,0.1);
         }
+        /* Responsive Design */
+        .desktop-nav {
+          display: flex;
+        }
+        .hamburger {
+          display: none;
+          flex-direction: column;
+          gap: 5px;
+          cursor: pointer;
+          padding: 8px;
+        }
+        .hamburger span {
+          display: block;
+          width: 24px;
+          height: 2px;
+          background: #2E6A80;
+          transition: all 0.3s;
+        }
+        .mobile-menu {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          background: white;
+          padding: 16px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+          flex-direction: column;
+          gap: 8px;
+        }
+        .mobile-menu.open {
+          display: flex;
+        }
+        @media (max-width: 768px) {
+          .desktop-nav {
+            display: none !important;
+          }
+          .hamburger {
+            display: flex !important;
+          }
+          .process-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .sustainability-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .section-padding {
+            padding: 60px 16px !important;
+          }
+          .hero-section {
+            padding: 120px 16px 60px !important;
+          }
+          .nav-container {
+            padding: 12px 16px !important;
+          }
+          .footer-grid {
+            grid-template-columns: 1fr !important;
+            text-align: center;
+          }
+        }
+        @media (max-width: 500px) {
+          .hero-section {
+            padding: 100px 12px 40px !important;
+          }
+          .btn-primary {
+            padding: 12px 24px;
+            font-size: 14px;
+          }
+          .process-card {
+            padding: 24px !important;
+          }
+        }
       ` }} />
 
       {/* Navigation */}
@@ -128,7 +201,7 @@ export default function Proceso() {
           transition: 'box-shadow 0.3s'
         }}
       >
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="nav-container" style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
             <img
               src={siteConfig.company.logo}
@@ -136,18 +209,40 @@ export default function Proceso() {
               style={{ height: 67.5, width: 'auto', objectFit: 'contain' }}
             />
           </Link>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+
+          {/* Desktop Navigation */}
+          <div className="desktop-nav" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <Link href="/proceso" className="nav-link" style={{ background: 'rgba(46,106,128,0.1)' }}>Proceso</Link>
             <Link href="/trabaja-con-nosotros" className="nav-link">Trabaja con Nosotros</Link>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link href="/#cotizar" className="btn-primary" style={{ marginLeft: 16 }}>Cotizar Ahora</Link>
             </motion.div>
           </div>
+
+          {/* Hamburger Menu */}
+          <div
+            className="hamburger"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsMenuOpen(!isMenuOpen);
+            }}
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+
+          {/* Mobile Menu */}
+          <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
+            <Link href="/proceso" onClick={() => setIsMenuOpen(false)} className="nav-link" style={{ background: 'rgba(46,106,128,0.1)' }}>Proceso</Link>
+            <Link href="/trabaja-con-nosotros" onClick={() => setIsMenuOpen(false)} className="nav-link">Trabaja con Nosotros</Link>
+            <Link href="/#cotizar" onClick={() => setIsMenuOpen(false)} className="btn-primary" style={{ textAlign: 'center', marginTop: 8 }}>Cotizar Ahora</Link>
+          </div>
         </div>
       </motion.nav>
 
       {/* Hero Section */}
-      <section style={{
+      <section className="hero-section" style={{
         paddingTop: 140,
         paddingBottom: 60,
         background: 'linear-gradient(135deg, #2E6A80 0%, #1a4a5c 100%)',
@@ -181,7 +276,7 @@ export default function Proceso() {
       </section>
 
       {/* Process Image Section */}
-      <section style={{ padding: '80px 24px', background: 'white' }}>
+      <section className="section-padding" style={{ padding: '80px 24px', background: 'white' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <motion.div
             initial="hidden"
@@ -226,6 +321,7 @@ export default function Proceso() {
             whileInView="visible"
             viewport={{ once: true, margin: '-50px' }}
             variants={staggerContainer}
+            className="process-grid"
             style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 24 }}
           >
             {processSteps.map((step, i) => (
@@ -234,7 +330,7 @@ export default function Proceso() {
                 variants={fadeInUp}
                 whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(46,106,128,0.15)' }}
                 transition={{ duration: 0.3 }}
-                className="card"
+                className="card process-card"
                 style={{ padding: 28, textAlign: 'center' }}
               >
                 <motion.div
@@ -272,7 +368,7 @@ export default function Proceso() {
       </section>
 
       {/* Sustainability Section */}
-      <section id="sostenibilidad" style={{ padding: '80px 24px', background: '#F0FDF4' }}>
+      <section id="sostenibilidad" className="section-padding" style={{ padding: '80px 24px', background: '#F0FDF4' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <motion.div
             initial="hidden"
@@ -298,6 +394,7 @@ export default function Proceso() {
             whileInView="visible"
             viewport={{ once: true, margin: '-50px' }}
             variants={staggerContainer}
+            className="sustainability-grid"
             style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 24 }}
           >
             {sustainability.features.map((feature, i) => (

@@ -3,24 +3,47 @@ import { siteConfig } from '../../../config/site';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// Security: Email regex validation (hoisted for performance)
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Security: Sanitize input to prevent XSS
+function sanitizeInput(str) {
+  if (typeof str !== 'string') return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .trim()
+    .slice(0, 2000); // Limit length
+}
+
+// Security: Validate and sanitize phone number
+function sanitizePhone(phone) {
+  if (typeof phone !== 'string') return '';
+  return phone.replace(/[^\d\s\-+()]/g, '').slice(0, 20);
+}
+
 export async function POST(request) {
   try {
     const formData = await request.formData();
 
-    const nombre = formData.get('nombre');
-    const email = formData.get('email');
-    const telefono = formData.get('telefono');
-    const motivacion = formData.get('motivacion');
+    // Security: Sanitize all inputs
+    const nombre = sanitizeInput(formData.get('nombre') || '');
+    const email = sanitizeInput(formData.get('email') || '').toLowerCase();
+    const telefono = sanitizePhone(formData.get('telefono') || '');
+    const motivacion = sanitizeInput(formData.get('motivacion') || '');
     const cvFile = formData.get('cv');
 
-    // Validación del servidor
+    // Server-side validation
     const errors = {};
 
-    if (!nombre || nombre.trim().length < 2) {
+    if (!nombre || nombre.length < 2) {
       errors.nombre = 'El nombre es requerido';
     }
 
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!email || !EMAIL_REGEX.test(email)) {
       errors.email = 'Email inválido';
     }
 
@@ -28,7 +51,7 @@ export async function POST(request) {
       errors.telefono = 'Teléfono debe tener al menos 8 dígitos';
     }
 
-    if (!motivacion || motivacion.trim().length < 20) {
+    if (!motivacion || motivacion.length < 20) {
       errors.motivacion = 'La motivación debe tener al menos 20 caracteres';
     }
 

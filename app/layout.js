@@ -1,4 +1,5 @@
 import { siteConfig } from '../config/site';
+import Analytics from '../components/Analytics';
 
 export const metadata = {
   title: siteConfig.seo.title,
@@ -41,8 +42,12 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Analytics scripts loaded via Next.js Script component in body */}
       </head>
-      <body style={{ margin: 0, padding: 0 }}>{children}</body>
+      <body style={{ margin: 0, padding: 0 }}>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
