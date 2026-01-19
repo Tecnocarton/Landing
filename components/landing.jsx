@@ -73,6 +73,74 @@ const Counter = memo(({ end, suffix = '', duration = 2000 }) => {
 
 Counter.displayName = 'Counter';
 
+// Memoized StatCard component for rerender optimization
+const StatCard = memo(({ stat }) => (
+  <motion.div
+    variants={fadeInUp}
+    whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(46,106,128,0.2)' }}
+    transition={{ duration: 0.3 }}
+    className="card stat-card"
+    style={{
+      padding: 24,
+      background: 'rgba(255,255,255,0.95)',
+      textAlign: 'center'
+    }}
+  >
+    <div className="stat-number" style={{ fontSize: 36, fontWeight: 900, color: '#2E6A80', marginBottom: 8 }}>
+      {stat.isText ? stat.value : <Counter end={stat.value} suffix={stat.suffix} />}
+    </div>
+    <div style={{ fontSize: 14, color: '#6B7280', fontWeight: 500 }}>
+      {stat.label}
+    </div>
+  </motion.div>
+));
+
+StatCard.displayName = 'StatCard';
+
+// Memoized ProductCard component
+const ProductCard = memo(({ product }) => (
+  <motion.div
+    variants={fadeInUp}
+    whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(46,106,128,0.15)' }}
+    transition={{ duration: 0.3 }}
+    className="card"
+    style={{
+      padding: 20,
+      textAlign: 'center',
+      position: 'relative',
+      background: 'white'
+    }}
+  >
+    {!product.available && (
+      <div className="coming-soon-badge">Coming Soon</div>
+    )}
+    <div style={{
+      width: 64,
+      height: 64,
+      background: 'linear-gradient(135deg, #EE7E31, #f5a66d)',
+      borderRadius: 12,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      margin: '0 auto 16px',
+      fontSize: 32
+    }}>
+      📦
+    </div>
+    <h4 style={{ fontSize: 16, fontWeight: 700, color: '#2E6A80', marginBottom: 8 }}>
+      {product.name}
+    </h4>
+    <p style={{ fontSize: 12, color: '#6B7280', marginBottom: 12 }}>
+      {product.desc}
+    </p>
+    <div style={{ fontSize: 11, color: '#EE7E31', fontWeight: 600 }}>
+      {product.minOrder}
+    </div>
+  </motion.div>
+));
+
+ProductCard.displayName = 'ProductCard';
+
 // Smooth scroll function - hoisted outside component
 const scrollToSection = (e, sectionId) => {
   e.preventDefault();
@@ -105,9 +173,10 @@ export default function TecnocartonLanding() {
 
   const carouselImages = ['/img1.jpeg', '/img2.jpeg'];
 
+  // Passive scroll listener for better performance (client-passive-event-listeners)
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -976,26 +1045,7 @@ export default function TecnocartonLanding() {
             style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}
           >
             {stats.map((stat, i) => (
-              <motion.div
-                key={i}
-                variants={fadeInUp}
-                whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(46,106,128,0.2)' }}
-                transition={{ duration: 0.3 }}
-                className="card stat-card"
-                style={{
-                  padding: 24,
-                  background: 'rgba(255,255,255,0.95)'
-                }}
-              >
-                <div className="stat-number" style={{ fontSize: 36, fontWeight: 900, color: '#2E6A80' }}>
-                  {stat.isText ? (
-                    <span>{stat.value}{stat.suffix}</span>
-                  ) : (
-                    <Counter end={stat.value} suffix={stat.suffix} />
-                  )}
-                </div>
-                <div style={{ fontSize: 14, color: '#8E9DA6', fontWeight: 500 }}>{stat.label}</div>
-              </motion.div>
+              <StatCard key={i} stat={stat} />
             ))}
           </motion.div>
         </div>
