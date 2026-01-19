@@ -1,5 +1,9 @@
 import { siteConfig } from '../config/site';
+import Script from 'next/script';
 import Analytics from '../components/Analytics';
+
+const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID;
 
 export const metadata = {
   title: siteConfig.seo.title,
@@ -42,9 +46,59 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Analytics scripts loaded via Next.js Script component in body */}
+
+        {/* Google Tag Manager - beforeInteractive para carga temprana */}
+        {GTM_ID && (
+          <Script
+            id="gtm-script"
+            strategy="beforeInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+                'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+                })(window,document,'script','dataLayer','${GTM_ID}');
+              `,
+            }}
+          />
+        )}
+
+        {/* Google Analytics 4 - gtag.js */}
+        {GA_MEASUREMENT_ID && (
+          <>
+            <Script
+              id="ga-script"
+              strategy="beforeInteractive"
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+            />
+            <Script
+              id="ga-config"
+              strategy="beforeInteractive"
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${GA_MEASUREMENT_ID}');
+                `,
+              }}
+            />
+          </>
+        )}
       </head>
       <body style={{ margin: 0, padding: 0 }}>
+        {/* Google Tag Manager (noscript) */}
+        {GTM_ID && (
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+              height="0"
+              width="0"
+              style={{ display: 'none', visibility: 'hidden' }}
+            />
+          </noscript>
+        )}
         {children}
         <Analytics />
       </body>
