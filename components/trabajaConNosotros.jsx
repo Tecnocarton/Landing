@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { siteConfig, jobOffers } from '../config/site';
+import { trackPostulacionEnviada } from '../lib/analytics';
 
 // Animation variants
 const fadeInUp = {
@@ -117,6 +118,13 @@ export default function TrabajaConNosotros() {
 
       if (data.success) {
         setFormStatus({ loading: false, success: true, error: null });
+
+        // Registrar conversión en Google Ads y GTM
+        trackPostulacionEnviada({
+          nombre: formData.nombre,
+          oferta: selectedOffer?.titulo || 'Postulación espontánea',
+        });
+
         // Reset form
         setTimeout(() => {
           setFormData({
