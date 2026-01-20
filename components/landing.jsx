@@ -9,6 +9,7 @@ import {
   caseStudies,
   clients
 } from '../config/site';
+import { trackCotizacionEnviada } from '../lib/analytics';
 
 // Animation variants - hoisted outside component (rendering-hoist-jsx)
 const fadeInUp = {
@@ -270,6 +271,14 @@ export default function TecnocartonLanding() {
 
       if (data.success) {
         setFormStatus({ loading: false, success: true, error: null, quoteNumber: data.quoteNumber });
+
+        // Registrar conversión en Google Ads y GTM
+        trackCotizacionEnviada({
+          producto: formData.producto,
+          empresa: formData.empresa,
+          quoteNumber: data.quoteNumber,
+        });
+
         // Reset form after showing success
         setTimeout(() => {
           setFormData({
