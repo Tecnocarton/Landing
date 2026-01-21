@@ -9,7 +9,7 @@ export const siteConfig = {
   // Información de la empresa
   company: {
     name: 'Tecnocarton',
-    legalName: 'Tecnocarton SpA',
+    legalName: 'Tecnocarton Ltda.',
     description: 'Soluciones de cartón corrugado con capacidad industrial y flexibilidad artesanal.',
     foundedYear: 2003,
     logo: '/logotipo.png',
@@ -26,11 +26,11 @@ export const siteConfig = {
 
   // Dirección
   address: {
-    street: 'Las Violetas',
-    city: 'Padre Hurtado',
-    region: 'Región Metropolitana',
+    street: 'Las violetas',
+    city: 'Padre hurtado',
+    region: 'Región metropolitana',
     country: 'Chile',
-    full: 'Las Violetas, Padre Hurtado, RM',
+    full: 'Las violetas, Padre hurtado, RM',
   },
 
   // Redes sociales
@@ -43,7 +43,7 @@ export const siteConfig = {
   // Configuración del formulario
   form: {
     recipientEmail: 'ventas@tecnocarton.cl',
-    emailSubjectPrefix: 'Cotización Web',
+    emailSubjectPrefix: 'Cotización web',
     responseTime: '24 horas hábiles',
   },
 
@@ -259,9 +259,9 @@ export const jobOffers = [
 export const availablePositions = [
   { id: 'operador', name: 'Operador auxiliar' },
   { id: 'bodega', name: 'Logística' },
-  { id: 'vendedor', name: 'Vendedor/Ejecutivo Comercial' },
+  { id: 'vendedor', name: 'Vendedor/Ejecutivo comercial' },
   { id: 'administrativo', name: 'Administrativo' },
-  { id: 'mantencion', name: 'Técnico en Mantención' },
+  { id: 'mantencion', name: 'Técnico en mantención' },
   { id: 'otro', name: 'Otro' }
 ];
 
@@ -283,10 +283,10 @@ export const valueProps = [
 
 // Links del footer (Empresa)
 export const footerLinks = [
-  { name: 'Sobre Nosotros', href: null, section: null },
+  { name: 'Sobre nosotros', href: null, section: null },
   { name: 'Proceso', href: '/proceso', section: null },
-  { name: 'Casos de Éxito', href: null, section: 'casos' },
-  { name: 'Trabaja con Nosotros', href: '/trabaja-con-nosotros', section: null }
+  { name: 'Casos de éxito', href: null, section: 'casos' },
+  { name: 'Trabaja con nosotros', href: '/trabaja-con-nosotros', section: null }
 ];
 
 // Theme colors - mantiene sincronía con landing.css :root
