@@ -1,6 +1,7 @@
 import { siteConfig } from '../config/site';
 import Script from 'next/script';
 import Analytics from '../components/Analytics';
+import './globals.css';
 
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID;

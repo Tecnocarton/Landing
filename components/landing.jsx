@@ -2,14 +2,13 @@
 
 import React, { useState, useEffect, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  siteConfig,
-  products,
-  cardboardTypes,
-  caseStudies,
-  clients
-} from '../config/site';
+import { siteConfig, products, cardboardTypes, caseStudies, clients, stats, valueProps, footerLinks, theme } from '../config/site';
 import { trackCotizacionEnviada } from '../lib/analytics';
+import { NumberTicker } from './ui/number-ticker';
+import { TextGenerateEffect } from './ui/text-generate-effect';
+import { FlipWords } from './ui/flip-words';
+import { SectionHeader } from './ui/section-header';
+import './landing.css';
 
 // Animation variants - hoisted outside component (rendering-hoist-jsx)
 const fadeInUp = {
@@ -30,50 +29,6 @@ const scaleIn = {
   visible: { opacity: 1, scale: 1 }
 };
 
-// Custom hook for intersection observer - optimized with passive listener
-const useInView = (threshold = 0.1) => {
-  const [ref, setRef] = useState(null);
-  const [isInView, setIsInView] = useState(false);
-
-  useEffect(() => {
-    if (!ref) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsInView(entry.isIntersecting),
-      { threshold, rootMargin: '50px' }
-    );
-    observer.observe(ref);
-    return () => observer.disconnect();
-  }, [ref, threshold]);
-
-  return [setRef, isInView];
-};
-
-// Memoized Counter component (rerender-memo)
-const Counter = memo(({ end, suffix = '', duration = 2000 }) => {
-  const [count, setCount] = useState(0);
-  const [ref, isInView] = useInView();
-
-  useEffect(() => {
-    if (!isInView) return;
-    let start = 0;
-    const increment = end / (duration / 16);
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= end) {
-        setCount(end);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
-    }, 16);
-    return () => clearInterval(timer);
-  }, [isInView, end, duration]);
-
-  return <span ref={ref}>{count}{suffix}</span>;
-});
-
-Counter.displayName = 'Counter';
-
 // Memoized StatCard component for rerender optimization
 const StatCard = memo(({ stat }) => (
   <motion.div
@@ -87,10 +42,15 @@ const StatCard = memo(({ stat }) => (
       textAlign: 'center'
     }}
   >
-    <div className="stat-number" style={{ fontSize: 36, fontWeight: 900, color: '#2E6A80', marginBottom: 8 }}>
-      {stat.isText ? stat.value : <Counter end={stat.value} suffix={stat.suffix} />}
+    <div className="stat-number" style={{ fontSize: 36, fontWeight: 900, color: theme.colors.primaryLight, marginBottom: 8 }}>
+      {stat.isText ? stat.value : (
+        <>
+          <NumberTicker value={stat.value} />
+          {stat.suffix}
+        </>
+      )}
     </div>
-    <div style={{ fontSize: 14, color: '#6B7280', fontWeight: 500 }}>
+    <div style={{ fontSize: 14, color: theme.colors.textMuted, fontWeight: 500 }}>
       {stat.label}
     </div>
   </motion.div>
@@ -118,7 +78,7 @@ const ProductCard = memo(({ product }) => (
     <div style={{
       width: 64,
       height: 64,
-      background: 'linear-gradient(135deg, #EE7E31, #f5a66d)',
+      background: theme.gradients.accent,
       borderRadius: 12,
       display: 'flex',
       alignItems: 'center',
@@ -128,13 +88,13 @@ const ProductCard = memo(({ product }) => (
     }}>
       📦
     </div>
-    <h4 style={{ fontSize: 16, fontWeight: 700, color: '#2E6A80', marginBottom: 8 }}>
+    <h4 style={{ fontSize: 16, fontWeight: 700, color: theme.colors.primaryLight, marginBottom: 8 }}>
       {product.name}
     </h4>
-    <p style={{ fontSize: 12, color: '#6B7280', marginBottom: 12 }}>
+    <p style={{ fontSize: 12, color: theme.colors.textMuted, marginBottom: 12 }}>
       {product.desc}
     </p>
-    <div style={{ fontSize: 11, color: '#EE7E31', fontWeight: 600 }}>
+    <div style={{ fontSize: 11, color: theme.colors.accent, fontWeight: 600 }}>
       {product.minOrder}
     </div>
   </motion.div>
@@ -303,460 +263,10 @@ export default function TecnocartonLanding() {
     }
   };
 
-
-  const stats = [
-    { value: 90, suffix: '%+', label: 'Tasa de Recompra' },
-    { value: 200, suffix: '+', label: 'Clientes Activos' },
-    { value: 200, suffix: '+', label: 'Ton/Mes' },
-    { value: 'RM', suffix: '', label: 'Cobertura de Entregas', isText: true }
-  ];
-
   const currentYear = new Date().getFullYear();
 
   return (
     <div style={{ fontFamily: "'DM Sans', 'Segoe UI', system-ui, sans-serif", background: '#FAFBFC', minHeight: '100vh' }}>
-      {/* Professional Typography & Design System */}
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
-
-        :root {
-          --color-primary: #1B4D5C;
-          --color-primary-light: #2E6A80;
-          --color-primary-dark: #0F3540;
-          --color-accent: #E67635;
-          --color-accent-light: #F29559;
-          --color-accent-dark: #C45A1A;
-          --color-surface: #FFFFFF;
-          --color-surface-elevated: #FAFBFC;
-          --color-text: #1A2B32;
-          --color-text-muted: #5A6B73;
-          --color-text-subtle: #8A9BA3;
-          --color-border: #E2E8EC;
-          --color-border-light: #F0F3F5;
-          --shadow-sm: 0 1px 2px rgba(27, 77, 92, 0.04);
-          --shadow-md: 0 4px 12px rgba(27, 77, 92, 0.08);
-          --shadow-lg: 0 8px 30px rgba(27, 77, 92, 0.12);
-          --shadow-xl: 0 20px 50px rgba(27, 77, 92, 0.15);
-          --radius-sm: 6px;
-          --radius-md: 12px;
-          --radius-lg: 20px;
-          --radius-xl: 28px;
-        }
-
-        * {
-          font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-          font-family: 'Plus Jakarta Sans', 'DM Sans', system-ui, sans-serif;
-          letter-spacing: -0.02em;
-        }
-
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(24px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes float {
-          0%, 100% { transform: translateY(0) rotate(0deg); }
-          50% { transform: translateY(-8px) rotate(1deg); }
-        }
-        @keyframes pulse {
-          0%, 100% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.02); opacity: 0.9; }
-        }
-        @keyframes shimmer {
-          0% { background-position: -200% 0; }
-          100% { background-position: 200% 0; }
-        }
-        @keyframes gradient {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        @keyframes glow {
-          0%, 100% { box-shadow: 0 0 20px rgba(230, 118, 53, 0.3); }
-          50% { box-shadow: 0 0 40px rgba(230, 118, 53, 0.5); }
-        }
-
-        .animate-fadeIn { animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
-        .animate-float { animation: float 4s ease-in-out infinite; }
-        .animate-pulse { animation: pulse 3s ease-in-out infinite; }
-
-        .gradient-text {
-          background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
-        .gradient-text-subtle {
-          background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary-light) 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
-        .btn-primary {
-          background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
-          color: white;
-          border: none;
-          padding: 16px 32px;
-          border-radius: var(--radius-md);
-          font-weight: 600;
-          font-size: 15px;
-          cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-          box-shadow: 0 4px 14px rgba(230, 118, 53, 0.35), inset 0 1px 0 rgba(255,255,255,0.2);
-          position: relative;
-          overflow: hidden;
-        }
-        .btn-primary::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-          transition: left 0.5s;
-        }
-        .btn-primary:hover::before {
-          left: 100%;
-        }
-        .btn-primary:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 8px 25px rgba(230, 118, 53, 0.45), inset 0 1px 0 rgba(255,255,255,0.2);
-        }
-        .btn-primary:active {
-          transform: translateY(-1px);
-        }
-        .btn-primary:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-          transform: none;
-          box-shadow: none;
-        }
-
-        .btn-secondary {
-          background: transparent;
-          color: var(--color-primary);
-          border: 2px solid var(--color-primary);
-          padding: 14px 28px;
-          border-radius: var(--radius-md);
-          font-weight: 600;
-          font-size: 15px;
-          cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-          position: relative;
-          overflow: hidden;
-        }
-        .btn-secondary::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: var(--color-primary);
-          transform: scaleX(0);
-          transform-origin: right;
-          transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-          z-index: -1;
-        }
-        .btn-secondary:hover::before {
-          transform: scaleX(1);
-          transform-origin: left;
-        }
-        .btn-secondary:hover {
-          color: white;
-          border-color: var(--color-primary);
-        }
-
-        .card {
-          background: var(--color-surface);
-          border-radius: var(--radius-lg);
-          box-shadow: var(--shadow-md);
-          transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-          border: 1px solid var(--color-border-light);
-        }
-        .card:hover {
-          box-shadow: var(--shadow-xl);
-          transform: translateY(-4px);
-        }
-
-        .card-glass {
-          background: rgba(255, 255, 255, 0.85);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 0.5);
-        }
-
-        input, select, textarea {
-          width: 100%;
-          padding: 16px 20px;
-          border: 2px solid var(--color-border);
-          border-radius: var(--radius-md);
-          font-size: 15px;
-          transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-          background: var(--color-surface);
-          box-sizing: border-box;
-          font-family: inherit;
-          color: var(--color-text);
-        }
-        input::placeholder, textarea::placeholder {
-          color: var(--color-text-subtle);
-        }
-        input:focus, select:focus, textarea:focus {
-          outline: none;
-          border-color: var(--color-primary);
-          box-shadow: 0 0 0 4px rgba(27, 77, 92, 0.1);
-        }
-        input.error, textarea.error {
-          border-color: #DC2626;
-          box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
-        }
-
-        .nav-link {
-          color: var(--color-primary);
-          text-decoration: none;
-          font-weight: 500;
-          padding: 10px 18px;
-          border-radius: var(--radius-sm);
-          transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-          position: relative;
-        }
-        .nav-link::after {
-          content: '';
-          position: absolute;
-          bottom: 6px;
-          left: 18px;
-          right: 18px;
-          height: 2px;
-          background: var(--color-accent);
-          transform: scaleX(0);
-          transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .nav-link:hover::after {
-          transform: scaleX(1);
-        }
-        .nav-link:hover {
-          color: var(--color-primary-dark);
-        }
-
-        .mobile-menu {
-          display: none;
-          position: absolute;
-          top: 100%;
-          left: 0;
-          right: 0;
-          background: rgba(255, 255, 255, 0.98);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          padding: 20px;
-          box-shadow: var(--shadow-lg);
-          flex-direction: column;
-          gap: 8px;
-          border-top: 1px solid var(--color-border-light);
-        }
-        .mobile-menu.open {
-          display: flex;
-        }
-
-        .hamburger {
-          display: none;
-          flex-direction: column;
-          gap: 5px;
-          cursor: pointer;
-          padding: 10px;
-          border-radius: var(--radius-sm);
-          transition: background 0.3s;
-        }
-        .hamburger:hover {
-          background: rgba(27, 77, 92, 0.05);
-        }
-        .hamburger span {
-          display: block;
-          width: 22px;
-          height: 2px;
-          background: var(--color-primary);
-          transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-          border-radius: 2px;
-        }
-        .hamburger.open span:nth-child(1) {
-          transform: rotate(45deg) translate(5px, 5px);
-        }
-        .hamburger.open span:nth-child(2) {
-          opacity: 0;
-          transform: scaleX(0);
-        }
-        .hamburger.open span:nth-child(3) {
-          transform: rotate(-45deg) translate(5px, -5px);
-        }
-
-        .coming-soon-badge {
-          position: absolute;
-          top: 12px;
-          right: 12px;
-          background: linear-gradient(135deg, #7C3AED, #5B21B6);
-          color: white;
-          font-size: 10px;
-          font-weight: 700;
-          padding: 5px 10px;
-          border-radius: var(--radius-sm);
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
-        }
-
-        .section-label {
-          font-size: 13px;
-          font-weight: 700;
-          color: var(--color-accent);
-          text-transform: uppercase;
-          letter-spacing: 2px;
-          margin-bottom: 12px;
-          display: inline-block;
-        }
-
-        .noise-overlay {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          opacity: 0.03;
-          pointer-events: none;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-        }
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-          .hero-grid {
-            grid-template-columns: 1fr !important;
-            gap: 40px !important;
-          }
-          .stats-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-          }
-          .footer-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 32px !important;
-          }
-          .quote-section-grid {
-            grid-template-columns: 1fr !important;
-          }
-          .case-studies-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-          }
-        }
-        @media (max-width: 768px) {
-          .desktop-nav {
-            display: none;
-          }
-          .hamburger {
-            display: flex;
-          }
-          .mobile-menu {
-            display: none;
-          }
-          .mobile-menu.open {
-            display: flex;
-          }
-          .hero-grid {
-            padding: 100px 16px 60px !important;
-            gap: 32px !important;
-          }
-          .stats-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 12px !important;
-          }
-          .value-grid, .products-grid {
-            grid-template-columns: 1fr !important;
-          }
-          .footer-grid {
-            grid-template-columns: 1fr !important;
-            text-align: center;
-          }
-          .footer-grid > div {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-          }
-          .section-padding {
-            padding: 60px 16px !important;
-          }
-          .quote-form-card {
-            padding: 24px !important;
-          }
-          .case-studies-grid {
-            grid-template-columns: 1fr !important;
-          }
-          .clients-section {
-            padding: 40px 16px !important;
-          }
-        }
-        @media (max-width: 500px) {
-          .step-label {
-            display: none;
-          }
-          .hero-grid {
-            padding: 90px 12px 40px !important;
-          }
-          .stats-grid {
-            grid-template-columns: 1fr !important;
-            gap: 12px !important;
-          }
-          .stat-card {
-            padding: 16px !important;
-          }
-          .stat-number {
-            font-size: 28px !important;
-          }
-          .btn-primary, .btn-secondary {
-            padding: 12px 24px;
-            font-size: 14px;
-          }
-          .section-title {
-            font-size: 24px !important;
-          }
-          .quote-form-card {
-            padding: 16px !important;
-            margin: 0 -8px;
-            border-radius: 12px !important;
-          }
-          .form-buttons {
-            flex-direction: column !important;
-          }
-          .form-buttons button {
-            width: 100% !important;
-          }
-          .cardboard-info-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-          }
-        }
-        html {
-          scroll-behavior: smooth;
-        }
-        /* Clients carousel infinite scroll animation */
-        @keyframes scroll-left {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(calc(-100% / 3));
-          }
-        }
-        .clients-carousel {
-          animation: scroll-left 30s linear infinite;
-        }
-        .clients-carousel:hover {
-          animation-play-state: paused;
-        }
-      `}</style>
-
       {/* Navigation */}
       <motion.nav
         initial={{ y: -100 }}
@@ -798,29 +308,32 @@ export default function TecnocartonLanding() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Cotizar Ahora
+              Cotizar ahora
             </motion.a>
           </div>
 
           {/* Hamburger Menu */}
-          <div
+          <button
             className={`hamburger ${isMenuOpen ? 'open' : ''}`}
             onClick={(e) => {
               e.stopPropagation();
               setIsMenuOpen(!isMenuOpen);
             }}
+            aria-label={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
           >
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </button>
 
           {/* Mobile Menu */}
-          <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
+          <nav id="mobile-menu" className={`mobile-menu ${isMenuOpen ? 'open' : ''}`} aria-label="Menú principal móvil">
             <a href="/proceso" onClick={() => setIsMenuOpen(false)} className="nav-link">Proceso</a>
             <a href="/trabaja-con-nosotros" onClick={() => setIsMenuOpen(false)} className="nav-link">Trabaja con Nosotros</a>
-            <a href="#cotizar" onClick={(e) => { scrollToSection(e, 'cotizar'); setIsMenuOpen(false); }} className="btn-primary" style={{ textAlign: 'center', textDecoration: 'none', marginTop: 8 }}>Cotizar Ahora</a>
-          </div>
+            <a href="#cotizar" onClick={(e) => { scrollToSection(e, 'cotizar'); setIsMenuOpen(false); }} className="btn-primary" style={{ textAlign: 'center', textDecoration: 'none', marginTop: 8 }}>Cotizar ahora</a>
+          </nav>
         </div>
       </motion.nav>
 
@@ -967,8 +480,16 @@ export default function TecnocartonLanding() {
                 marginBottom: 24
               }}
             >
-              Soluciones de embalaje en{' '}
-              <span style={{ color: '#EE7E31' }}>cartón corrugado</span>
+              <TextGenerateEffect
+                words="Soluciones de embalaje en"
+                className="text-white"
+                duration={0.4}
+                staggerDelay={0.06}
+              />{' '}
+              <FlipWords
+                words={['cartón corrugado', 'embalaje industrial', 'packaging sustentable']}
+                duration={3000}
+              />
             </motion.h1>
 
             <motion.p
@@ -1001,7 +522,7 @@ export default function TecnocartonLanding() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Solicitar Cotización
+                Solicitar cotización
               </motion.a>
               <motion.a
                 href="/proceso"
@@ -1014,7 +535,7 @@ export default function TecnocartonLanding() {
                 whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.1)' }}
                 whileTap={{ scale: 0.95 }}
               >
-                Ver Proceso
+                Ver proceso
               </motion.a>
             </motion.div>
 
@@ -1025,7 +546,7 @@ export default function TecnocartonLanding() {
               transition={{ delay: 0.6 }}
               style={{ marginTop: 40, display: 'flex', gap: 24, flexWrap: 'wrap' }}
             >
-              {['Producción Propia', 'Entrega Nacional', 'Pedidos Flexibles'].map((badge, i) => (
+              {['Producción propia', 'Entrega nacional', 'Pedidos flexibles'].map((badge, i) => (
                 <motion.span
                   key={i}
                   initial={{ opacity: 0, x: -10 }}
@@ -1063,21 +584,10 @@ export default function TecnocartonLanding() {
       {/* Value Proposition */}
       <section className="section-padding" style={{ padding: '80px 24px', background: 'white' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={fadeInUp}
-            transition={{ duration: 0.6 }}
-            style={{ textAlign: 'center', marginBottom: 60 }}
-          >
-            <h2 style={{ fontSize: 14, fontWeight: 700, color: '#EE7E31', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 12 }}>
-              ¿Por qué {siteConfig.company.name}?
-            </h2>
-            <h3 className="gradient-text" style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 900, marginBottom: 16 }}>
-              La mejor opción en embalaje
-            </h3>
-          </motion.div>
+          <SectionHeader
+            label={`¿Por qué ${siteConfig.company.name}?`}
+            title="La mejor opción en embalaje"
+          />
 
           <motion.div
             initial="hidden"
@@ -1087,12 +597,7 @@ export default function TecnocartonLanding() {
             className="value-grid"
             style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 24 }}
           >
-            {[
-              { title: 'Integración Vertical', desc: 'Control total desde la materia prima hasta el producto final. Sin intermediarios.' },
-              { title: 'Cobertura Nacional', desc: 'Flota propia para entregas en todo Chile. Rapidez y confiabilidad garantizada.' },
-              { title: 'Flexibilidad Híbrida', desc: 'Grandes volúmenes industriales o pedidos personalizados. Nos adaptamos a ti.' },
-              { title: 'Precios de Fábrica', desc: 'Directo del productor. Elimina costos de intermediación y ahorra.' }
-            ].map((item, i) => (
+            {valueProps.map((item, i) => (
               <motion.div
                 key={i}
                 variants={fadeInUp}
@@ -1129,21 +634,7 @@ export default function TecnocartonLanding() {
       {/* Products Section */}
       <section id="productos" className="section-padding" style={{ padding: '80px 24px', background: '#F8FAFB' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={fadeInUp}
-            transition={{ duration: 0.6 }}
-            style={{ textAlign: 'center', marginBottom: 60 }}
-          >
-            <h2 style={{ fontSize: 14, fontWeight: 700, color: '#EE7E31', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 12 }}>
-              Catálogo
-            </h2>
-            <h3 className="gradient-text" style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 900 }}>
-              Nuestros productos
-            </h3>
-          </motion.div>
+          <SectionHeader label="Catálogo" title="Nuestros productos" />
 
           <motion.div
             initial="hidden"
@@ -1199,6 +690,7 @@ export default function TecnocartonLanding() {
                     <img
                       src={product.image}
                       alt={product.name}
+                      loading="lazy"
                       style={{
                         width: '100%',
                         height: '100%',
@@ -1276,21 +768,7 @@ export default function TecnocartonLanding() {
       {/* Case Studies Section */}
       <section id="casos" className="section-padding" style={{ padding: '80px 24px', background: '#F8FAFB' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={fadeInUp}
-            transition={{ duration: 0.6 }}
-            style={{ textAlign: 'center', marginBottom: 60 }}
-          >
-            <h2 style={{ fontSize: 14, fontWeight: 700, color: '#EE7E31', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 12 }}>
-              Casos de éxito
-            </h2>
-            <h3 className="gradient-text" style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 900, marginBottom: 16 }}>
-              Soluciones que generan resultados
-            </h3>
-          </motion.div>
+          <SectionHeader label="Casos de éxito" title="Soluciones que generan resultados" />
 
           <motion.div
             initial="hidden"
@@ -1914,21 +1392,7 @@ export default function TecnocartonLanding() {
       {/* Clients Section */}
       <section className="clients-section" style={{ padding: '100px 24px', background: '#F8FAFB', overflow: 'hidden' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={fadeInUp}
-            transition={{ duration: 0.6 }}
-            style={{ textAlign: 'center', marginBottom: 60 }}
-          >
-            <h2 style={{ fontSize: 14, fontWeight: 700, color: '#EE7E31', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 12 }}>
-              Clientes
-            </h2>
-            <h3 className="gradient-text" style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 900 }}>
-              Empresas que confían en nosotros
-            </h3>
-          </motion.div>
+          <SectionHeader label="Clientes" title="Empresas que confían en nosotros" />
 
           {/* Carousel container */}
           <div style={{
@@ -1980,6 +1444,7 @@ export default function TecnocartonLanding() {
                     src={client.logo}
                     alt={client.name}
                     title={client.name}
+                    loading="lazy"
                     style={{
                       maxWidth: 180,
                       maxHeight: 90,
@@ -2093,12 +1558,7 @@ export default function TecnocartonLanding() {
             {/* Company */}
             <div>
               <h5 style={{ fontWeight: 700, marginBottom: 20, color: '#EE7E31' }}>Empresa</h5>
-              {[
-                { name: 'Sobre Nosotros', section: null, href: null },
-                { name: 'Proceso', section: null, href: '/proceso' },
-                { name: 'Casos de Exito', section: 'casos', href: null },
-                { name: 'Trabaja con Nosotros', section: null, href: '/trabaja-con-nosotros' }
-              ].map((item, i) => (
+              {footerLinks.map((item, i) => (
                 <a
                   key={i}
                   href={item.href || (item.section ? `#${item.section}` : '#')}
