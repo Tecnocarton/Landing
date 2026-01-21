@@ -296,40 +296,24 @@ export default function TecnocartonLanding() {
             />
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="desktop-nav" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <a href="/proceso" className="nav-link">Proceso</a>
-            <a href="/trabaja-con-nosotros" className="nav-link">Trabaja con nosotros</a>
-            <motion.a
-              href="#cotizar"
-              onClick={(e) => scrollToSection(e, 'cotizar')}
-              className="btn-primary"
-              style={{ marginLeft: 16, textDecoration: 'none' }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Cotizar ahora
-            </motion.a>
-          </div>
-
-          {/* Hamburger Menu */}
+          {/* Hamburger Menu - Always visible */}
           <button
-            className={`hamburger ${isMenuOpen ? 'open' : ''}`}
+            className={`hamburger always-visible ${isMenuOpen ? 'open' : ''}`}
             onClick={(e) => {
               e.stopPropagation();
               setIsMenuOpen(!isMenuOpen);
             }}
             aria-label={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
             aria-expanded={isMenuOpen}
-            aria-controls="mobile-menu"
+            aria-controls="main-menu"
           >
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
           </button>
 
-          {/* Mobile Menu */}
-          <nav id="mobile-menu" className={`mobile-menu ${isMenuOpen ? 'open' : ''}`} aria-label="Menú principal móvil">
+          {/* Dropdown Menu */}
+          <nav id="main-menu" className={`mobile-menu ${isMenuOpen ? 'open' : ''}`} aria-label="Menú principal">
             <a href="/proceso" onClick={() => setIsMenuOpen(false)} className="nav-link">Proceso</a>
             <a href="/trabaja-con-nosotros" onClick={() => setIsMenuOpen(false)} className="nav-link">Trabaja con Nosotros</a>
             <a href="#cotizar" onClick={(e) => { scrollToSection(e, 'cotizar'); setIsMenuOpen(false); }} className="btn-primary" style={{ textAlign: 'center', textDecoration: 'none', marginTop: 8 }}>Cotizar ahora</a>
@@ -409,11 +393,10 @@ export default function TecnocartonLanding() {
         </div>
 
         {/* Carousel indicators - refined design */}
-        <div style={{
+        <div className="carousel-indicators" style={{
           position: 'absolute',
-          bottom: 48,
-          left: '50%',
-          transform: 'translateX(-50%)',
+          bottom: 24,
+          left: 24,
           display: 'flex',
           gap: 10,
           zIndex: 2,
