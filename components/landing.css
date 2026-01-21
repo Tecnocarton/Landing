@@ -211,6 +211,10 @@ input.error, textarea.error { border-color: #DC2626; box-shadow: 0 0 0 4px rgba(
   background: transparent;
   border: none;
 }
+/* Always show hamburger when using .always-visible class */
+.hamburger.always-visible {
+  display: flex;
+}
 .hamburger:hover { background: rgba(27, 77, 92, 0.05); }
 .hamburger span {
   display: block;
@@ -270,6 +274,7 @@ input.error, textarea.error { border-color: #DC2626; box-shadow: 0 0 0 4px rgba(
   .hamburger { display: flex; }
   .mobile-menu { display: none; }
   .mobile-menu.open { display: flex; }
+  .carousel-indicators { display: none !important; }
   .hero-grid { padding: 100px 16px 60px !important; gap: 32px !important; }
   .stats-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
   .value-grid, .products-grid { grid-template-columns: 1fr !important; }

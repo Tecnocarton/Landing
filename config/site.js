@@ -267,10 +267,10 @@ export const availablePositions = [
 
 // Estadísticas para el Hero
 export const stats = [
-  { value: 90, suffix: '%+', label: 'Tasa de Recompra' },
-  { value: 200, suffix: '+', label: 'Clientes Activos' },
+  { value: 90, suffix: '%+', label: 'Tasa de recompra' },
+  { value: 200, suffix: '+', label: 'Clientes activos' },
   { value: 200, suffix: '+', label: 'Ton/Mes' },
-  { value: 'RM', suffix: '', label: 'Cobertura de Entregas', isText: true }
+  { value: 'RM', suffix: '', label: 'Cobertura de entregas', isText: true }
 ];
 
 // Propuesta de valor
