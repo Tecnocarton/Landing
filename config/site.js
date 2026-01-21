@@ -75,7 +75,7 @@ export const siteConfig = {
 export const products = [
   {
     id: 'planchas',
-    name: 'Planchas Corrugadas',
+    name: 'Planchas corrugadas',
     desc: '12C, 14C, 17C, 20C',
     minOrder: 'Mín. 1.500 unidades',
     image: '/productos/plancha.png',
@@ -83,7 +83,7 @@ export const products = [
   },
   {
     id: 'rollos',
-    name: 'Rollos de Corrugado',
+    name: 'Rollos de corrugado',
     desc: 'Múltiples gramajes',
     minOrder: 'Mín. 300 kg',
     image: '/productos/carton corrugado.png',
@@ -91,7 +91,7 @@ export const products = [
   },
   {
     id: 'troquelado',
-    name: 'Cartón Troquelado',
+    name: 'Cartón troquelado',
     desc: 'Diseños personalizados',
     minOrder: 'Mín. 2.000 unidades',
     image: '/productos/troquelado.png',
@@ -99,14 +99,14 @@ export const products = [
   },
   {
     id: 'cajas',
-    name: 'Cajas a Medida',
+    name: 'Cajas a medida',
     desc: 'Troqueladas y RSC',
     available: false,
     comingSoon: true
   },
   {
     id: 'autoarmables',
-    name: 'Cajas Autoarmables',
+    name: 'Cajas autoarmables',
     desc: 'Rápido armado',
     available: false,
     comingSoon: true
@@ -123,9 +123,9 @@ export const cardboardTypes = [
 
 // Pasos del proceso de producción (simplificado a 4 pasos)
 export const processSteps = [
-  { num: '01', title: 'Materia Prima', desc: 'Bobinas de papel kraft y liner de proveedores certificados', icon: 'package' },
-  { num: '02', title: 'Corrugado y Laminado', desc: 'Formación de onda mediante calor y presión, unión con adhesivo base almidón', icon: 'layers' },
-  { num: '03', title: 'Corte y Control', desc: 'Corte de precisión milimétrica con verificación de gramaje y resistencia', icon: 'check-square' },
+  { num: '01', title: 'Materia prima', desc: 'Bobinas de papel liner, medium y recicladas de proveedores certificados', icon: 'package' },
+  { num: '02', title: 'Corrugado y laminado', desc: 'Formación de onda mediante calor y presión, unión con adhesivo base almidón', icon: 'layers' },
+  { num: '03', title: 'Corte y control', desc: 'Corte de precisión milimétrica con verificación de gramaje y resistencia', icon: 'check-square' },
   { num: '04', title: 'Despacho', desc: 'Entrega con flota propia en todo RM', icon: 'truck' }
 ];
 
@@ -162,21 +162,21 @@ export const sustainability = {
 export const caseStudies = [
   {
     industry: 'E-commerce',
-    company: 'Tienda Online Líder',
+    company: 'Tienda online',
     challenge: 'Necesitaban cajas autoarmables que redujeran tiempo de empaque',
     solution: 'Diseñamos cajas con cierre automático sin cinta',
     result: '40% menos tiempo de empaque'
   },
   {
     industry: 'Agroindustria',
-    company: 'Exportadora Frutícola',
+    company: 'Exportadora frutícola',
     challenge: 'Requerían cajas resistentes a humedad para exportación',
     solution: 'Corrugado 20C con tratamiento especial',
     result: 'Cero reclamos por daño en tránsito'
   },
   {
     industry: 'Manufactura',
-    company: 'Fábrica de Muebles',
+    company: 'Fábrica de muebles',
     challenge: 'Embalaje para piezas de diferentes tamaños',
     solution: 'Sistema modular de planchas y esquineros',
     result: '25% reducción en costos de embalaje'
@@ -264,3 +264,58 @@ export const availablePositions = [
   { id: 'mantencion', name: 'Técnico en Mantención' },
   { id: 'otro', name: 'Otro' }
 ];
+
+// Estadísticas para el Hero
+export const stats = [
+  { value: 90, suffix: '%+', label: 'Tasa de Recompra' },
+  { value: 200, suffix: '+', label: 'Clientes Activos' },
+  { value: 200, suffix: '+', label: 'Ton/Mes' },
+  { value: 'RM', suffix: '', label: 'Cobertura de Entregas', isText: true }
+];
+
+// Propuesta de valor
+export const valueProps = [
+  { title: 'Integración vertical', desc: 'Control total desde la materia prima hasta el producto final. Sin intermediarios.' },
+  { title: 'Cobertura nacional', desc: 'Flota propia para entregas en todo Chile. Rapidez y confiabilidad garantizada.' },
+  { title: 'Flexibilidad híbrida', desc: 'Grandes volúmenes industriales o pedidos personalizados. Nos adaptamos a ti.' },
+  { title: 'Precios de fábrica', desc: 'Directo del productor. Elimina costos de intermediación y ahorra.' }
+];
+
+// Links del footer (Empresa)
+export const footerLinks = [
+  { name: 'Sobre Nosotros', href: null, section: null },
+  { name: 'Proceso', href: '/proceso', section: null },
+  { name: 'Casos de Éxito', href: null, section: 'casos' },
+  { name: 'Trabaja con Nosotros', href: '/trabaja-con-nosotros', section: null }
+];
+
+// Theme colors - mantiene sincronía con landing.css :root
+export const theme = {
+  colors: {
+    primary: '#1B4D5C',
+    primaryLight: '#2E6A80',
+    primaryDark: '#0F3540',
+    accent: '#E67635',
+    accentLight: '#F29559',
+    accentDark: '#C45A1A',
+    surface: '#FFFFFF',
+    surfaceElevated: '#FAFBFC',
+    surfaceSection: '#F8FAFB',
+    text: '#1A2B32',
+    textSecondary: '#374151',
+    textMuted: '#6B7280',
+    textSubtle: '#8E9DA6',
+    success: '#059669',
+    successLight: '#10B981',
+    error: '#DC2626',
+    border: '#E2E8EC',
+    borderLight: '#F0F3F5',
+    borderInput: '#E5E7EB',
+  },
+  gradients: {
+    primary: 'linear-gradient(135deg, #2E6A80, #1B4D5C)',
+    accent: 'linear-gradient(135deg, #E67635, #C45A1A)',
+    hero: 'linear-gradient(135deg, rgba(27,77,92,0.92), rgba(15,53,64,0.88), rgba(27,77,92,0.9))',
+    quote: 'linear-gradient(135deg, #2E6A80, #1a4a5c)',
+  }
+};
