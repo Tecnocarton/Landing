@@ -1335,6 +1335,7 @@ export default function TecnocartonLanding() {
               {[...clients, ...clients, ...clients].map((client, i) => (
                 <div
                   key={i}
+                  className="client-card"
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -1342,26 +1343,8 @@ export default function TecnocartonLanding() {
                     minWidth: 200,
                     height: 120,
                     padding: '16px 28px',
-                    background: '#E5E7EB',
                     borderRadius: 16,
                     boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                    filter: 'grayscale(100%)',
-                    opacity: 0.7,
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.filter = 'grayscale(0%)';
-                    e.currentTarget.style.opacity = '1';
-                    e.currentTarget.style.transform = 'scale(1.05)';
-                    e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.12)';
-                    e.currentTarget.style.background = 'white';
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.filter = 'grayscale(100%)';
-                    e.currentTarget.style.opacity = '0.7';
-                    e.currentTarget.style.transform = 'scale(1)';
-                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)';
-                    e.currentTarget.style.background = '#E5E7EB';
                   }}
                 >
                   <img

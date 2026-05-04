@@ -401,3 +401,19 @@ input.error, textarea.error { border-color: #DC2626; box-shadow: 0 0 0 4px rgba(
   }
   .clients-carousel { animation: none; }
 }
+
+/* Client carousel card hover */
+.client-card {
+  filter: grayscale(100%);
+  opacity: 0.7;
+  transition: all 0.3s ease;
+  background: #E5E7EB;
+}
+
+.client-card:hover {
+  filter: grayscale(0%);
+  opacity: 1;
+  transform: scale(1.05);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  background: white;
+}
