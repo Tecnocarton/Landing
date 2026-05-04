@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback, memo } from 'react';
+import { useScrolled, useCarousel } from '../lib/hooks';
 import { motion, AnimatePresence } from 'framer-motion';
 import { siteConfig, products, cardboardTypes, caseStudies, clients, stats, valueProps, footerLinks, theme } from '../config/site';
 import { trackCotizacionEnviada } from '../lib/analytics';
@@ -129,25 +130,11 @@ export default function TecnocartonLanding() {
   const [formErrors, setFormErrors] = useState({});
   const [formStatus, setFormStatus] = useState({ loading: false, success: false, error: null, quoteNumber: null });
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
 
   const carouselImages = ['/img1.jpeg', '/img2.jpeg'];
 
-  // Passive scroll listener for better performance (client-passive-event-listeners)
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Carousel auto-rotation
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [carouselImages.length]);
+  const scrolled = useScrolled(50);
+  const [currentSlide, setCurrentSlide] = useCarousel(carouselImages.length, 5000);
 
   // Close mobile menu when clicking outside
   useEffect(() => {
