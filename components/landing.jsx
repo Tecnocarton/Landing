@@ -1022,7 +1022,6 @@ export default function TecnocartonLanding() {
                           placeholder={
                             formData.producto === 'planchas' ? 'Ej: 1500 unidades' :
                             formData.producto === 'rollos' ? 'Ej: 300 kg' :
-                            formData.producto === 'troquelado' ? 'Ej: 2000 unidades' :
                             'Ej: 500 unidades'
                           }
                           value={formData.cantidad}
@@ -1110,7 +1109,7 @@ export default function TecnocartonLanding() {
                       {/* Detalle adicional */}
                       <div>
                         <label htmlFor="detalle" style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: '#374151' }}>
-                          {formData.producto === 'troquelado' ? 'Describe tu diseño o requerimiento' : 'Detalles adicionales (opcional)'}
+                          {'Detalles adicionales (opcional)'}
                         </label>
                         <textarea
                           id="detalle"
@@ -1120,7 +1119,6 @@ export default function TecnocartonLanding() {
                           placeholder={
                             formData.producto === 'planchas' ? 'Ej: Medidas, ancho 1200 x largo 2000 mm, ...' :
                             formData.producto === 'rollos' ? 'Ej: alto 1.2 m, para embalaje de muebles...' :
-                            formData.producto === 'troquelado' ? 'Describe las medidas, forma y uso del troquelado...' :
                             'Especificaciones adicionales...'
                           }
                           value={formData.detalle}
@@ -1339,8 +1337,8 @@ export default function TecnocartonLanding() {
                   <div>
                     <div style={{ fontWeight: 600, color: '#374151', marginBottom: 4 }}>Horario</div>
                     <div style={{ color: '#6B7280', lineHeight: 1.5 }}>
-                      Lunes a Viernes<br />
-                      08:00 - 17:30 hrs
+                      Lun. a Jue.: 08:00 - 17:30 hrs<br />
+                      Viernes: 08:00 - 14:30 hrs
                     </div>
                   </div>
                 </div>

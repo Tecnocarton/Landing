@@ -12,7 +12,7 @@ export const siteConfig = {
     legalName: 'Tecnocarton Ltda.',
     description: 'Soluciones de cartón corrugado con capacidad industrial y flexibilidad artesanal.',
     foundedYear: 2003,
-    logo: '/logotipo.png',
+    logo: '/logotipo-SF.svg',
   },
 
   // Datos de contacto
@@ -87,14 +87,6 @@ export const products = [
     desc: 'Múltiples gramajes',
     minOrder: 'Mín. 300 kg',
     image: '/productos/carton corrugado.png',
-    available: true
-  },
-  {
-    id: 'troquelado',
-    name: 'Cartón troquelado',
-    desc: 'Diseños personalizados',
-    minOrder: 'Mín. 2.000 unidades',
-    image: '/productos/troquelado.png',
     available: true
   },
   {
