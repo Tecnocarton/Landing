@@ -59,50 +59,6 @@ const StatCard = memo(({ stat }) => (
 
 StatCard.displayName = 'StatCard';
 
-// Memoized ProductCard component
-const ProductCard = memo(({ product }) => (
-  <motion.div
-    variants={fadeInUp}
-    whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(46,106,128,0.15)' }}
-    transition={{ duration: 0.3 }}
-    className="card"
-    style={{
-      padding: 20,
-      textAlign: 'center',
-      position: 'relative',
-      background: 'white'
-    }}
-  >
-    {!product.available && (
-      <div className="coming-soon-badge">Coming Soon</div>
-    )}
-    <div style={{
-      width: 64,
-      height: 64,
-      background: theme.gradients.accent,
-      borderRadius: 12,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      margin: '0 auto 16px',
-      fontSize: 32
-    }}>
-      📦
-    </div>
-    <h4 style={{ fontSize: 16, fontWeight: 700, color: theme.colors.primaryLight, marginBottom: 8 }}>
-      {product.name}
-    </h4>
-    <p style={{ fontSize: 12, color: theme.colors.textMuted, marginBottom: 12 }}>
-      {product.desc}
-    </p>
-    <div style={{ fontSize: 11, color: theme.colors.accent, fontWeight: 600 }}>
-      {product.minOrder}
-    </div>
-  </motion.div>
-));
-
-ProductCard.displayName = 'ProductCard';
-
 // Smooth scroll function - hoisted outside component
 const scrollToSection = (e, sectionId) => {
   e.preventDefault();
