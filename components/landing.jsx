@@ -825,9 +825,15 @@ export default function TecnocartonLanding() {
           </motion.div>
 
           {/* Step indicators */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 40, flexWrap: 'wrap' }}>
+          <div role="list" style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 40, flexWrap: 'wrap' }}>
             {['Producto', 'Especificaciones', 'Contacto'].map((step, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div
+                key={i}
+                role="listitem"
+                aria-label={`Paso ${i + 1} de 3: ${step}${activeStep > i ? ' — completado' : activeStep === i ? ' — actual' : ' — pendiente'}`}
+                aria-current={activeStep === i ? 'step' : undefined}
+                style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+              >
                 <div style={{
                   width: 36,
                   height: 36,
@@ -853,6 +859,8 @@ export default function TecnocartonLanding() {
 
           {/* Form card */}
           <motion.div
+            role="group"
+            aria-labelledby="form-step-title"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-50px' }}
@@ -881,55 +889,56 @@ export default function TecnocartonLanding() {
                 </motion.div>
               )}
             </AnimatePresence>
-            {formStatus.success ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ type: 'spring', stiffness: 200 }}
-                style={{ textAlign: 'center', padding: 40 }}
-              >
+            <div aria-live="polite" aria-atomic="true">
+              {formStatus.success ? (
                 <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
-                  style={{
-                    width: 80,
-                    height: 80,
-                    background: 'linear-gradient(135deg, #059669, #10B981)',
-                    borderRadius: '50%',
-                    margin: '0 auto 16px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 200 }}
+                  style={{ textAlign: 'center', padding: 40 }}
                 >
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
-                    <path d="M20 6L9 17l-5-5"/>
-                  </svg>
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
+                    style={{
+                      width: 80,
+                      height: 80,
+                      background: 'linear-gradient(135deg, #059669, #10B981)',
+                      borderRadius: '50%',
+                      margin: '0 auto 16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+                      <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                  </motion.div>
+                  <motion.h4
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    style={{ fontSize: 24, fontWeight: 700, color: '#059669', marginBottom: 12 }}
+                  >
+                    ¡Solicitud Enviada!
+                  </motion.h4>
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    style={{ color: '#6B7280' }}
+                  >
+                    Hemos recibido tu solicitud de cotización.<br />
+                    Te contactaremos en menos de {siteConfig.form.responseTime}.
+                  </motion.p>
                 </motion.div>
-                <motion.h4
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  style={{ fontSize: 24, fontWeight: 700, color: '#059669', marginBottom: 12 }}
-                >
-                  ¡Solicitud Enviada!
-                </motion.h4>
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                  style={{ color: '#6B7280' }}
-                >
-                  Hemos recibido tu solicitud de cotización.<br />
-                  Te contactaremos en menos de {siteConfig.form.responseTime}.
-                </motion.p>
-              </motion.div>
-            ) : (
-              <>
-                {activeStep === 0 && (
+              ) : (
+                <>
+                  {activeStep === 0 && (
                   <div style={{ animation: 'fadeInUp 0.5s ease' }}>
-                    <h4 style={{ fontSize: 20, fontWeight: 700, color: '#2E6A80', marginBottom: 24, textAlign: 'center' }}>
+                    <h4 id="form-step-title" style={{ fontSize: 20, fontWeight: 700, color: '#2E6A80', marginBottom: 24, textAlign: 'center' }}>
                       ¿Qué producto necesitas?
                     </h4>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
@@ -965,7 +974,7 @@ export default function TecnocartonLanding() {
 
                 {activeStep === 1 && (
                   <div style={{ animation: 'fadeInUp 0.5s ease' }}>
-                    <h4 style={{ fontSize: 20, fontWeight: 700, color: '#2E6A80', marginBottom: 24, textAlign: 'center' }}>
+                    <h4 id="form-step-title" style={{ fontSize: 20, fontWeight: 700, color: '#2E6A80', marginBottom: 24, textAlign: 'center' }}>
                       Especificaciones del pedido
                     </h4>
                     <div style={{ display: 'grid', gap: 20 }}>
@@ -1103,7 +1112,7 @@ export default function TecnocartonLanding() {
 
                 {activeStep === 2 && (
                   <div style={{ animation: 'fadeInUp 0.5s ease' }}>
-                    <h4 style={{ fontSize: 20, fontWeight: 700, color: '#2E6A80', marginBottom: 24, textAlign: 'center' }}>
+                    <h4 id="form-step-title" style={{ fontSize: 20, fontWeight: 700, color: '#2E6A80', marginBottom: 24, textAlign: 'center' }}>
                       Datos de contacto
                     </h4>
                     <div style={{ display: 'grid', gap: 20 }}>
@@ -1198,7 +1207,8 @@ export default function TecnocartonLanding() {
                   </div>
                 )}
               </>
-            )}
+              )}
+            </div>
           </motion.div>
 
           {/* Quick contact */}
