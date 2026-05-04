@@ -386,6 +386,24 @@ input.error, textarea.error { border-color: #DC2626; box-shadow: 0 0 0 4px rgba(
 }
 .footer-link:hover { color: white; }
 
+/* Footer LinkedIn button (brand section) */
+.footer-linkedin-btn {
+  transition: all 0.3s;
+}
+.footer-linkedin-btn:hover {
+  background: #0077B5 !important;
+  transform: translateY(-2px);
+}
+
+/* Footer bottom LinkedIn link */
+.footer-linkedin-link {
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 0.3s;
+}
+.footer-linkedin-link:hover {
+  color: #0077B5;
+}
+
 /* Accessibility - Focus styles */
 :focus-visible {
   outline: 2px solid var(--color-accent);
@@ -400,4 +418,20 @@ input.error, textarea.error { border-color: #DC2626; box-shadow: 0 0 0 4px rgba(
     transition-duration: 0.01ms !important;
   }
   .clients-carousel { animation: none; }
+}
+
+/* Client carousel card hover */
+.client-card {
+  filter: grayscale(100%);
+  opacity: 0.7;
+  transition: all 0.3s ease;
+  background: #E5E7EB;
+}
+
+.client-card:hover {
+  filter: grayscale(0%);
+  opacity: 1;
+  transform: scale(1.05);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  background: white;
 }

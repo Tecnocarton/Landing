@@ -57,7 +57,7 @@ export const siteConfig = {
   // SEO y metadata
   seo: {
     title: 'Tecnocarton - Soluciones de embalaje en cartón corrugado',
-    description: 'Fabricantes de cartón corrugado desde 2003. Planchas, rollos, cajas a medida, cajas autoarmables, esquineros y consumibles. Entrega en todo Chile.',
+    description: 'Fabricantes de cartón corrugado desde 2003. Planchas, rollos, cajas a medida, esquineros y consumibles. Entrega en todo Chile.',
     keywords: 'cartón corrugado, embalaje, cajas, planchas corrugadas, Chile, packaging',
     ogImage: '/og-image.jpg',
   },
@@ -92,17 +92,11 @@ export const products = [
   {
     id: 'cajas',
     name: 'Cajas a medida',
-    desc: 'Troqueladas y RSC',
-    available: false,
-    comingSoon: true
+    desc: 'Impresión hasta 2 colores',
+    minOrder: 'Mín. 500 unidades',
+    image: '/Caja-Convencional-1.jpg',
+    available: true
   },
-  {
-    id: 'autoarmables',
-    name: 'Cajas autoarmables',
-    desc: 'Rápido armado',
-    available: false,
-    comingSoon: true
-  }
 ];
 
 // Tipos de cartón
@@ -155,7 +149,7 @@ export const caseStudies = [
   {
     industry: 'E-commerce',
     company: 'Tienda online',
-    challenge: 'Necesitaban cajas autoarmables que redujeran tiempo de empaque',
+    challenge: 'Necesitaban cajas a medida que redujeran tiempo de empaque',
     solution: 'Diseñamos cajas con cierre automático sin cinta',
     result: '40% menos tiempo de empaque'
   },
