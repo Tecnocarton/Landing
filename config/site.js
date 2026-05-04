@@ -92,17 +92,11 @@ export const products = [
   {
     id: 'cajas',
     name: 'Cajas a medida',
-    desc: 'Troqueladas y RSC',
-    available: false,
-    comingSoon: true
+    desc: 'Impresión hasta 2 colores',
+    minOrder: 'Mín. 500 unidades',
+    image: '/productos/caja-convencional.png',
+    available: true
   },
-  {
-    id: 'autoarmables',
-    name: 'Cajas autoarmables',
-    desc: 'Rápido armado',
-    available: false,
-    comingSoon: true
-  }
 ];
 
 // Tipos de cartón
