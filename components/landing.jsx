@@ -210,6 +210,10 @@ export default function TecnocartonLanding() {
 
   return (
     <div style={{ fontFamily: "'DM Sans', 'Segoe UI', system-ui, sans-serif", background: '#FAFBFC', minHeight: '100vh' }}>
+      <a href="#main-content" className="skip-link">
+        Saltar al contenido principal
+      </a>
+
       {/* Navigation */}
       <motion.nav
         initial={{ y: -100 }}
@@ -239,6 +243,19 @@ export default function TecnocartonLanding() {
             />
           </div>
 
+          <div className="desktop-nav">
+            <a href="/proceso" className="nav-link">Proceso</a>
+            <a href="/trabaja-con-nosotros" className="nav-link">Trabaja con Nosotros</a>
+            <a
+              href="#cotizar"
+              onClick={(e) => scrollToSection(e, 'cotizar')}
+              className="btn-primary desktop-nav-cta"
+              style={{ textDecoration: 'none' }}
+            >
+              Cotizar ahora
+            </a>
+          </div>
+
           {/* Hamburger Menu - Always visible */}
           <button
             className={`hamburger always-visible ${isMenuOpen ? 'open' : ''}`}
@@ -265,7 +282,7 @@ export default function TecnocartonLanding() {
       </motion.nav>
 
       {/* Hero Section */}
-      <section style={{
+      <section id="main-content" style={{
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
