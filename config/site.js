@@ -94,7 +94,7 @@ export const products = [
     name: 'Cajas a medida',
     desc: 'Impresión hasta 2 colores',
     minOrder: 'Mín. 500 unidades',
-    image: '/productos/caja-convencional.png',
+    image: '/Caja-Convencional-1.jpg',
     available: true
   },
 ];
