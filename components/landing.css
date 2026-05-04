@@ -386,6 +386,24 @@ input.error, textarea.error { border-color: #DC2626; box-shadow: 0 0 0 4px rgba(
 }
 .footer-link:hover { color: white; }
 
+/* Footer LinkedIn button (brand section) */
+.footer-linkedin-btn {
+  transition: all 0.3s;
+}
+.footer-linkedin-btn:hover {
+  background: #0077B5 !important;
+  transform: translateY(-2px);
+}
+
+/* Footer bottom LinkedIn link */
+.footer-linkedin-link {
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 0.3s;
+}
+.footer-linkedin-link:hover {
+  color: #0077B5;
+}
+
 /* Accessibility - Focus styles */
 :focus-visible {
   outline: 2px solid var(--color-accent);

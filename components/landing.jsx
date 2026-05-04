@@ -1417,6 +1417,7 @@ export default function TecnocartonLanding() {
                     href={siteConfig.social.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="footer-linkedin-btn"
                     style={{
                       width: 40,
                       height: 40,
@@ -1425,15 +1426,6 @@ export default function TecnocartonLanding() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      transition: 'all 0.3s'
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.background = '#0077B5';
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
-                      e.currentTarget.style.transform = 'translateY(0)';
                     }}
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
@@ -1448,17 +1440,7 @@ export default function TecnocartonLanding() {
             <div>
               <h5 style={{ fontWeight: 700, marginBottom: 20, color: '#EE7E31' }}>Productos</h5>
               {products.map((product, i) => (
-                <a key={i} href="#productos" onClick={(e) => scrollToSection(e, 'productos')} style={{
-                  display: 'block',
-                  color: 'rgba(255,255,255,0.6)',
-                  textDecoration: 'none',
-                  marginBottom: 10,
-                  fontSize: 14,
-                  transition: 'color 0.3s'
-                }}
-                onMouseEnter={e => e.currentTarget.style.color = 'white'}
-                onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
-                >{product.name}</a>
+                <a key={i} href="#productos" onClick={(e) => scrollToSection(e, 'productos')} className="footer-link">{product.name}</a>
               ))}
             </div>
 
@@ -1470,16 +1452,7 @@ export default function TecnocartonLanding() {
                   key={i}
                   href={item.href || (item.section ? `#${item.section}` : '#')}
                   onClick={(e) => item.section && scrollToSection(e, item.section)}
-                  style={{
-                    display: 'block',
-                    color: 'rgba(255,255,255,0.6)',
-                    textDecoration: 'none',
-                    marginBottom: 10,
-                    fontSize: 14,
-                    transition: 'color 0.3s'
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.color = 'white'}
-                  onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
+                  className="footer-link"
                 >{item.name}</a>
               ))}
             </div>
@@ -1515,17 +1488,14 @@ export default function TecnocartonLanding() {
                 href={siteConfig.social.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="footer-linkedin-link"
                 style={{
-                  color: 'rgba(255,255,255,0.4)',
                   textDecoration: 'none',
                   fontSize: 13,
-                  transition: 'color 0.3s',
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6
                 }}
-                onMouseEnter={e => e.currentTarget.style.color = '#0077B5'}
-                onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
