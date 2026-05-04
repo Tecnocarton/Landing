@@ -435,3 +435,68 @@ input.error, textarea.error { border-color: #DC2626; box-shadow: 0 0 0 4px rgba(
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   background: white;
 }
+
+/* Skip link para navegación por teclado */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 8px;
+  background: var(--color-primary);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 0 0 6px 6px;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  z-index: 9999;
+  transition: top 0.2s;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+/* Desktop nav — links visibles en pantallas grandes */
+.desktop-nav {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .hamburger.always-visible {
+    display: none;
+  }
+  .mobile-menu {
+    display: none !important;
+  }
+  .desktop-nav-cta {
+    padding: 10px 24px;
+    font-size: 14px;
+  }
+}
+
+/* Focus states para navegación por teclado — desktop nav */
+.desktop-nav .nav-link:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+.desktop-nav-cta:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 4px;
+}
+
+/* Respeto por preferencia de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  .client-card,
+  .footer-link,
+  .footer-linkedin-btn,
+  .footer-linkedin-link,
+  .skip-link,
+  .desktop-nav .nav-link {
+    transition: none;
+  }
+}
