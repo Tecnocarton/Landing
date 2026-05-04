@@ -149,7 +149,7 @@ export const caseStudies = [
   {
     industry: 'E-commerce',
     company: 'Tienda online',
-    challenge: 'Necesitaban cajas autoarmables que redujeran tiempo de empaque',
+    challenge: 'Necesitaban cajas a medida que redujeran tiempo de empaque',
     solution: 'Diseñamos cajas con cierre automático sin cinta',
     result: '40% menos tiempo de empaque'
   },
