@@ -709,7 +709,7 @@ export default function TecnocartonLanding() {
       </section>
 
       {/* Case Studies Section */}
-      <section id="casos" className="section-padding" style={{ padding: '80px 24px', background: '#F8FAFB' }}>
+      <section id="casos" className="section-padding" style={{ padding: '80px 24px', background: 'white' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <SectionHeader label="Casos de éxito" title="Soluciones que generan resultados" />
 
