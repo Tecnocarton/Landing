@@ -57,7 +57,7 @@ export const siteConfig = {
   // SEO y metadata
   seo: {
     title: 'Tecnocarton - Soluciones de embalaje en cartón corrugado',
-    description: 'Fabricantes de cartón corrugado desde 2003. Planchas, rollos, cajas a medida, cajas autoarmables, esquineros y consumibles. Entrega en todo Chile.',
+    description: 'Fabricantes de cartón corrugado desde 2003. Planchas, rollos, cajas a medida, esquineros y consumibles. Entrega en todo Chile.',
     keywords: 'cartón corrugado, embalaje, cajas, planchas corrugadas, Chile, packaging',
     ogImage: '/og-image.jpg',
   },
