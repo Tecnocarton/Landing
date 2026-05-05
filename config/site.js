@@ -154,11 +154,11 @@ export const caseStudies = [
     result: '40% menos tiempo de empaque'
   },
   {
-    industry: 'Agroindustria',
-    company: 'Exportadora frutícola',
-    challenge: 'Requerían cajas resistentes a humedad para exportación',
-    solution: 'Corrugado 20C con tratamiento especial',
-    result: 'Cero reclamos por daño en tránsito'
+    industry: 'Industria del embalaje',
+    company: 'Fabricante de cajas',
+    challenge: 'Requerían planchas corrugadas de alta calidad y corte exacto para producción continua de cajas',
+    solution: 'Suministro regular de planchas 17C y 20C con corte a medida y despacho programado',
+    result: '30% menos tiempo de producción'
   },
   {
     industry: 'Manufactura',
@@ -254,8 +254,7 @@ export const availablePositions = [
 // Estadísticas para el Hero
 export const stats = [
   { value: 90, suffix: '%+', label: 'Tasa de recompra' },
-  { value: 200, suffix: '+', label: 'Clientes activos' },
-  { value: 200, suffix: '+', label: 'Ton/Mes' },
+  { value: 'Nacional', suffix: '', label: 'Cobertura bajo coordinación', isText: true },
   { value: 'RM', suffix: '', label: 'Cobertura de entregas', isText: true }
 ];
 
