@@ -131,6 +131,13 @@ html { scroll-behavior: smooth; }
 .btn-secondary:hover::before { transform: scaleX(1); transform-origin: left; }
 .btn-secondary:hover { color: white; border-color: var(--color-primary); }
 
+.btn-secondary--on-dark {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: white;
+}
+.btn-secondary--on-dark::before { background: rgba(255, 255, 255, 0.15); }
+.btn-secondary--on-dark:hover { color: white; border-color: rgba(255, 255, 255, 0.8); }
+
 /* Cards */
 .card {
   background: var(--color-surface);
@@ -233,7 +240,7 @@ input.error, textarea.error { border-color: #DC2626; box-shadow: 0 0 0 4px rgba(
   position: absolute;
   top: 12px;
   right: 12px;
-  background: linear-gradient(135deg, #7C3AED, #5B21B6);
+  background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary-dark));
   color: white;
   font-size: 10px;
   font-weight: 700;
@@ -347,7 +354,7 @@ input.error, textarea.error { border-color: #DC2626; box-shadow: 0 0 0 4px rgba(
   font-weight: 700;
   color: var(--color-accent);
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   margin-bottom: 12px;
 }
 
@@ -375,6 +382,14 @@ input.error, textarea.error { border-color: #DC2626; box-shadow: 0 0 0 4px rgba(
   border-radius: 12px;
 }
 
+/* Footer logo: invert dark multicolor logo to clean white for contrast on dark background */
+.footer-logo {
+  filter: brightness(0) invert(1);
+  opacity: 0.92;
+  transition: opacity 0.3s ease;
+}
+.footer-logo:hover { opacity: 1; }
+
 /* Footer Link Styles */
 .footer-link {
   display: block;
@@ -385,6 +400,24 @@ input.error, textarea.error { border-color: #DC2626; box-shadow: 0 0 0 4px rgba(
   transition: color 0.3s;
 }
 .footer-link:hover { color: white; }
+
+/* Footer LinkedIn button (brand section) */
+.footer-linkedin-btn {
+  transition: all 0.3s;
+}
+.footer-linkedin-btn:hover {
+  background: #0077B5 !important;
+  transform: translateY(-2px);
+}
+
+/* Footer bottom LinkedIn link */
+.footer-linkedin-link {
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 0.3s;
+}
+.footer-linkedin-link:hover {
+  color: #0077B5;
+}
 
 /* Accessibility - Focus styles */
 :focus-visible {
@@ -400,4 +433,167 @@ input.error, textarea.error { border-color: #DC2626; box-shadow: 0 0 0 4px rgba(
     transition-duration: 0.01ms !important;
   }
   .clients-carousel { animation: none; }
+  .quote-decoration-layer { display: none; }
+}
+
+/* Capa decorativa parallax + mouse-tracking en sección "Cotización rápida" */
+.quote-decoration-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+@media (max-width: 768px) {
+  .quote-decoration-layer [data-mobile-hide="true"] { display: none; }
+}
+
+/* Client carousel card hover */
+.client-card {
+  filter: grayscale(100%);
+  opacity: 0.7;
+  transition: all 0.3s ease;
+  background: #E5E7EB;
+}
+
+.client-card:hover {
+  filter: grayscale(0%);
+  opacity: 1;
+  transform: scale(1.05);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  background: white;
+}
+
+/* Skip link para navegación por teclado */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 8px;
+  background: var(--color-primary);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 0 0 6px 6px;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  z-index: 9999;
+  transition: top 0.2s;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+/* Desktop nav — links visibles en pantallas grandes */
+.desktop-nav {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .hamburger.always-visible {
+    display: none;
+  }
+  .mobile-menu {
+    display: none !important;
+  }
+  .desktop-nav-cta {
+    padding: 10px 24px;
+    font-size: 14px;
+  }
+}
+
+/* Focus states para navegación por teclado — desktop nav */
+.desktop-nav .nav-link:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+.desktop-nav-cta:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 4px;
+}
+
+/* Respeto por preferencia de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  .client-card,
+  .footer-link,
+  .footer-linkedin-btn,
+  .footer-linkedin-link,
+  .skip-link,
+  .desktop-nav .nav-link {
+    transition: none;
+  }
+  .quote-form-card::before { animation: none; }
+  .nav-shimmer::after { animation: none; opacity: 0.3; }
+}
+
+/* ─── Shimmer borde tarjeta formulario ──────────────────────────────────── */
+@keyframes shimmer-border-sweep {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.quote-form-card {
+  position: relative;
+}
+
+.quote-form-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.55) 25%,
+    rgba(230,118,53,0.90) 50%,
+    rgba(255,255,255,0.55) 75%,
+    transparent 100%
+  );
+  background-size: 250% 100%;
+  animation: shimmer-border-sweep 3s linear infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ─── Nav shimmer (borde inferior animado) ──────────────────────────────── */
+@keyframes nav-shimmer-sweep {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.nav-shimmer {
+  position: relative;
+}
+
+.nav-shimmer::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(27,77,92,0.25) 15%,
+    rgba(230,118,53,0.75) 40%,
+    rgba(242,149,89,0.95) 50%,
+    rgba(230,118,53,0.75) 60%,
+    rgba(27,77,92,0.25) 85%,
+    transparent 100%
+  );
+  background-size: 250% 100%;
+  animation: nav-shimmer-sweep 3.5s linear infinite;
+  pointer-events: none;
 }

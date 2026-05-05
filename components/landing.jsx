@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, memo } from 'react';
+import React, { useState, useEffect, useCallback, useRef, memo } from 'react';
+import { useScrolled, useCarousel } from '../lib/hooks';
 import { motion, AnimatePresence } from 'framer-motion';
 import { siteConfig, products, cardboardTypes, caseStudies, clients, stats, valueProps, footerLinks, theme } from '../config/site';
 import { trackCotizacionEnviada } from '../lib/analytics';
@@ -8,6 +9,7 @@ import { NumberTicker } from './ui/number-ticker';
 import { TextGenerateEffect } from './ui/text-generate-effect';
 import { FlipWords } from './ui/flip-words';
 import { SectionHeader } from './ui/section-header';
+import { SectionBeams } from './ui/section-beams';
 import './landing.css';
 
 // Animation variants - hoisted outside component (rendering-hoist-jsx)
@@ -58,50 +60,6 @@ const StatCard = memo(({ stat }) => (
 
 StatCard.displayName = 'StatCard';
 
-// Memoized ProductCard component
-const ProductCard = memo(({ product }) => (
-  <motion.div
-    variants={fadeInUp}
-    whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(46,106,128,0.15)' }}
-    transition={{ duration: 0.3 }}
-    className="card"
-    style={{
-      padding: 20,
-      textAlign: 'center',
-      position: 'relative',
-      background: 'white'
-    }}
-  >
-    {!product.available && (
-      <div className="coming-soon-badge">Coming Soon</div>
-    )}
-    <div style={{
-      width: 64,
-      height: 64,
-      background: theme.gradients.accent,
-      borderRadius: 12,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      margin: '0 auto 16px',
-      fontSize: 32
-    }}>
-      📦
-    </div>
-    <h4 style={{ fontSize: 16, fontWeight: 700, color: theme.colors.primaryLight, marginBottom: 8 }}>
-      {product.name}
-    </h4>
-    <p style={{ fontSize: 12, color: theme.colors.textMuted, marginBottom: 12 }}>
-      {product.desc}
-    </p>
-    <div style={{ fontSize: 11, color: theme.colors.accent, fontWeight: 600 }}>
-      {product.minOrder}
-    </div>
-  </motion.div>
-));
-
-ProductCard.displayName = 'ProductCard';
-
 // Smooth scroll function - hoisted outside component
 const scrollToSection = (e, sectionId) => {
   e.preventDefault();
@@ -129,25 +87,12 @@ export default function TecnocartonLanding() {
   const [formErrors, setFormErrors] = useState({});
   const [formStatus, setFormStatus] = useState({ loading: false, success: false, error: null, quoteNumber: null });
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
 
   const carouselImages = ['/img1.jpeg', '/img2.jpeg'];
 
-  // Passive scroll listener for better performance (client-passive-event-listeners)
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Carousel auto-rotation
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [carouselImages.length]);
+  const scrolled = useScrolled(50);
+  const [currentSlide, setCurrentSlide] = useCarousel(carouselImages.length, 5000);
+  const cotizarRef = useRef(null);
 
   // Close mobile menu when clicking outside
   useEffect(() => {
@@ -267,8 +212,13 @@ export default function TecnocartonLanding() {
 
   return (
     <div style={{ fontFamily: "'DM Sans', 'Segoe UI', system-ui, sans-serif", background: '#FAFBFC', minHeight: '100vh' }}>
+      <a href="#main-content" className="skip-link">
+        Saltar al contenido principal
+      </a>
+
       {/* Navigation */}
       <motion.nav
+        className="nav-shimmer"
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ type: 'spring', stiffness: 100, damping: 20 }}
@@ -289,11 +239,24 @@ export default function TecnocartonLanding() {
               src={siteConfig.company.logo}
               alt={siteConfig.company.name}
               style={{
-                height: 67.5,
+                height: 72,
                 width: 'auto',
                 objectFit: 'contain'
               }}
             />
+          </div>
+
+          <div className="desktop-nav">
+            <a href="/proceso" className="nav-link">Proceso</a>
+            <a href="/trabaja-con-nosotros" className="nav-link">Trabaja con nosotros</a>
+            <a
+              href="#cotizar"
+              onClick={(e) => scrollToSection(e, 'cotizar')}
+              className="btn-primary desktop-nav-cta"
+              style={{ textDecoration: 'none' }}
+            >
+              Cotizar ahora
+            </a>
           </div>
 
           {/* Hamburger Menu - Always visible */}
@@ -315,14 +278,14 @@ export default function TecnocartonLanding() {
           {/* Dropdown Menu */}
           <nav id="main-menu" className={`mobile-menu ${isMenuOpen ? 'open' : ''}`} aria-label="Menú principal">
             <a href="/proceso" onClick={() => setIsMenuOpen(false)} className="nav-link">Proceso</a>
-            <a href="/trabaja-con-nosotros" onClick={() => setIsMenuOpen(false)} className="nav-link">Trabaja con Nosotros</a>
+            <a href="/trabaja-con-nosotros" onClick={() => setIsMenuOpen(false)} className="nav-link">Trabaja con nosotros</a>
             <a href="#cotizar" onClick={(e) => { scrollToSection(e, 'cotizar'); setIsMenuOpen(false); }} className="btn-primary" style={{ textAlign: 'center', textDecoration: 'none', marginTop: 8 }}>Cotizar ahora</a>
           </nav>
         </div>
       </motion.nav>
 
       {/* Hero Section */}
-      <section style={{
+      <section id="main-content" style={{
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
@@ -363,7 +326,7 @@ export default function TecnocartonLanding() {
             left: 0,
             width: '100%',
             height: '100%',
-            background: 'linear-gradient(135deg, rgba(27,77,92,0.92) 0%, rgba(15,53,64,0.88) 50%, rgba(27,77,92,0.9) 100%)'
+            background: 'linear-gradient(135deg, rgba(27,77,92,0.72) 0%, rgba(15,53,64,0.65) 50%, rgba(27,77,92,0.70) 100%)'
           }} />
           {/* Subtle noise texture overlay */}
           <div className="noise-overlay" />
@@ -395,15 +358,12 @@ export default function TecnocartonLanding() {
         {/* Carousel indicators - refined design */}
         <div className="carousel-indicators" style={{
           position: 'absolute',
-          bottom: 24,
-          left: 24,
+          bottom: 28,
+          left: '50%',
+          transform: 'translateX(-50%)',
           display: 'flex',
           gap: 10,
           zIndex: 2,
-          padding: '8px 16px',
-          background: 'rgba(255,255,255,0.1)',
-          borderRadius: 24,
-          backdropFilter: 'blur(10px)'
         }}>
           {carouselImages.map((_, index) => (
             <button
@@ -438,8 +398,8 @@ export default function TecnocartonLanding() {
               transition={{ delay: 0.2 }}
               style={{
                 display: 'inline-block',
-                background: 'rgba(238,126,49,0.2)',
-                color: '#EE7E31',
+                background: 'rgba(230,118,53,0.2)',
+                color: theme.colors.accent,
                 padding: '8px 16px',
                 borderRadius: 20,
                 fontSize: 14,
@@ -509,13 +469,9 @@ export default function TecnocartonLanding() {
               </motion.a>
               <motion.a
                 href="/proceso"
-                className="btn-secondary"
-                style={{
-                  borderColor: 'rgba(255,255,255,0.5)',
-                  color: 'white',
-                  textDecoration: 'none'
-                }}
-                whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.1)' }}
+                className="btn-secondary btn-secondary--on-dark"
+                style={{ textDecoration: 'none' }}
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 Ver proceso
@@ -527,7 +483,7 @@ export default function TecnocartonLanding() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
-              style={{ marginTop: 40, display: 'flex', gap: 24, flexWrap: 'wrap' }}
+              style={{ marginTop: 40, display: 'flex', gap: 10, flexWrap: 'wrap' }}
             >
               {['Producción propia', 'Entrega nacional', 'Pedidos flexibles'].map((badge, i) => (
                 <motion.span
@@ -536,14 +492,22 @@ export default function TecnocartonLanding() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.7 + i * 0.1 }}
                   style={{
-                    color: 'rgba(255,255,255,0.8)',
-                    fontSize: 14,
+                    color: 'rgba(255,255,255,0.9)',
+                    fontSize: 13,
+                    fontWeight: 500,
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 6
+                    gap: 8,
+                    background: 'rgba(255,255,255,0.1)',
+                    padding: '6px 12px',
+                    borderRadius: 20,
+                    border: '1px solid rgba(255,255,255,0.15)'
                   }}
                 >
-                  <span style={{ color: '#EE7E31' }}>✓</span> {badge}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={theme.colors.accent} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6L9 17l-5-5"/>
+                  </svg>
+                  {badge}
                 </motion.span>
               ))}
             </motion.div>
@@ -595,7 +559,7 @@ export default function TecnocartonLanding() {
                   style={{
                     width: 64,
                     height: 64,
-                    background: 'linear-gradient(135deg, #2E6A80, #3d8299)',
+                    background: `linear-gradient(135deg, ${theme.colors.primaryLight}, ${theme.colors.primary})`,
                     borderRadius: 16,
                     margin: '0 auto 16px',
                     display: 'flex',
@@ -664,7 +628,7 @@ export default function TecnocartonLanding() {
                   borderRadius: 12,
                   margin: '0 auto 16px',
                   overflow: 'hidden',
-                  background: product.image ? '#f5f5f5' : 'linear-gradient(135deg, #EE7E31, #f5a66d)',
+                  background: product.image ? '#f5f5f5' : `linear-gradient(135deg, ${theme.colors.accent}, ${theme.colors.accentLight})`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center'
@@ -688,13 +652,13 @@ export default function TecnocartonLanding() {
                   )}
                 </div>
                 <h4 style={{ fontSize: 16, fontWeight: 700, color: '#2E6A80', marginBottom: 8 }}>{product.name}</h4>
-                <p style={{ fontSize: 13, color: '#8E9DA6', marginBottom: 8 }}>{product.desc}</p>
+                <p style={{ fontSize: 13, color: '#374151', fontWeight: 500, marginBottom: 8 }}>{product.desc}</p>
                 {product.minOrder && (
                   <p style={{
                     fontSize: 11,
-                    color: '#EE7E31',
+                    color: theme.colors.accent,
                     fontWeight: 600,
-                    background: 'rgba(238,126,49,0.1)',
+                    background: 'rgba(230,118,53,0.1)',
                     padding: '4px 8px',
                     borderRadius: 4,
                     display: 'inline-block'
@@ -704,52 +668,11 @@ export default function TecnocartonLanding() {
             ))}
           </motion.div>
 
-          {/* Cardboard types info */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-50px' }}
-            variants={fadeInUp}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="card"
-            style={{ marginTop: 40, padding: 32 }}
-          >
-            <h4 style={{ fontSize: 18, fontWeight: 700, color: '#2E6A80', marginBottom: 20, textAlign: 'center' }}>
-              Tipos de cartón disponibles
-            </h4>
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={staggerContainer}
-              className="cardboard-info-grid"
-              style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 24 }}
-            >
-              {cardboardTypes.map((item, i) => (
-                <motion.div
-                  key={i}
-                  variants={fadeInUp}
-                  whileHover={{ x: 5, borderLeftColor: '#2E6A80' }}
-                  transition={{ duration: 0.2 }}
-                  style={{
-                    padding: 20,
-                    background: '#F8FAFB',
-                    borderRadius: 12,
-                    borderLeft: '4px solid #EE7E31'
-                  }}
-                >
-                  <div style={{ fontWeight: 700, color: '#2E6A80', marginBottom: 8 }}>{item.type}</div>
-                  <div style={{ fontSize: 14, color: '#8E9DA6', marginBottom: 4 }}>Gramaje: {item.weight}</div>
-                  <div style={{ fontSize: 14, color: '#8E9DA6' }}>Ideal para: {item.use}</div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </motion.div>
         </div>
       </section>
 
       {/* Case Studies Section */}
-      <section id="casos" className="section-padding" style={{ padding: '80px 24px', background: '#F8FAFB' }}>
+      <section id="casos" className="section-padding" style={{ padding: '80px 24px', background: 'white' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <SectionHeader label="Casos de éxito" title="Soluciones que generan resultados" />
 
@@ -781,7 +704,7 @@ export default function TecnocartonLanding() {
                     right: 0,
                     width: 60,
                     height: 60,
-                    background: 'linear-gradient(135deg, #EE7E31, #f5a66d)',
+                    background: `linear-gradient(135deg, ${theme.colors.accent}, ${theme.colors.accentLight})`,
                     borderRadius: '0 16px 0 60px',
                     display: 'flex',
                     alignItems: 'center',
@@ -839,12 +762,14 @@ export default function TecnocartonLanding() {
       </section>
 
       {/* Quote Form Section */}
-      <section id="cotizar" className="section-padding" style={{
+      <section ref={cotizarRef} id="cotizar" className="section-padding" style={{
         padding: '80px 24px',
-        background: 'linear-gradient(135deg, #2E6A80 0%, #1a4a5c 100%)',
-        position: 'relative'
+        background: `linear-gradient(135deg, ${theme.colors.primaryLight} 0%, ${theme.colors.primaryDark} 100%)`,
+        position: 'relative',
+        overflow: 'hidden'
       }}>
-        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+        <SectionBeams />
+        <div style={{ maxWidth: 900, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -853,7 +778,7 @@ export default function TecnocartonLanding() {
             transition={{ duration: 0.6 }}
             style={{ textAlign: 'center', marginBottom: 48 }}
           >
-            <h2 style={{ fontSize: 14, fontWeight: 700, color: '#EE7E31', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 12 }}>
+            <h2 style={{ fontSize: 14, fontWeight: 700, color: theme.colors.accent, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 12 }}>
               Cotización rápida
             </h2>
             <h3 style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 900, color: 'white', marginBottom: 16 }}>
@@ -865,14 +790,20 @@ export default function TecnocartonLanding() {
           </motion.div>
 
           {/* Step indicators */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 40, flexWrap: 'wrap' }}>
+          <div role="list" style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 40, flexWrap: 'wrap' }}>
             {['Producto', 'Especificaciones', 'Contacto'].map((step, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div
+                key={i}
+                role="listitem"
+                aria-label={`Paso ${i + 1} de 3: ${step}${activeStep > i ? ' — completado' : activeStep === i ? ' — actual' : ' — pendiente'}`}
+                aria-current={activeStep === i ? 'step' : undefined}
+                style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+              >
                 <div style={{
                   width: 36,
                   height: 36,
                   borderRadius: '50%',
-                  background: activeStep >= i ? '#EE7E31' : 'rgba(255,255,255,0.2)',
+                  background: activeStep >= i ? theme.colors.accent : 'rgba(255,255,255,0.2)',
                   color: 'white',
                   display: 'flex',
                   alignItems: 'center',
@@ -880,19 +811,27 @@ export default function TecnocartonLanding() {
                   fontWeight: 700,
                   fontSize: 14,
                   transition: 'all 0.3s'
-                }}>{activeStep > i ? '✓' : i + 1}</div>
+                }}>
+                  {activeStep > i ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                  ) : i + 1}
+                </div>
                 <span className="step-label" style={{
                   color: activeStep >= i ? 'white' : 'rgba(255,255,255,0.5)',
                   fontWeight: 500,
                   fontSize: 14
                 }}>{step}</span>
-                {i < 2 && <div style={{ width: 40, height: 2, background: activeStep > i ? '#EE7E31' : 'rgba(255,255,255,0.2)' }} />}
+                {i < 2 && <div style={{ width: 40, height: 2, background: activeStep > i ? theme.colors.accent : 'rgba(255,255,255,0.2)' }} />}
               </div>
             ))}
           </div>
 
           {/* Form card */}
           <motion.div
+            role="group"
+            aria-labelledby="form-step-title"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-50px' }}
@@ -921,55 +860,56 @@ export default function TecnocartonLanding() {
                 </motion.div>
               )}
             </AnimatePresence>
-            {formStatus.success ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ type: 'spring', stiffness: 200 }}
-                style={{ textAlign: 'center', padding: 40 }}
-              >
+            <div aria-live="polite" aria-atomic="true">
+              {formStatus.success ? (
                 <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
-                  style={{
-                    width: 80,
-                    height: 80,
-                    background: 'linear-gradient(135deg, #059669, #10B981)',
-                    borderRadius: '50%',
-                    margin: '0 auto 16px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 200 }}
+                  style={{ textAlign: 'center', padding: 40 }}
                 >
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
-                    <path d="M20 6L9 17l-5-5"/>
-                  </svg>
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
+                    style={{
+                      width: 80,
+                      height: 80,
+                      background: 'linear-gradient(135deg, #059669, #10B981)',
+                      borderRadius: '50%',
+                      margin: '0 auto 16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+                      <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                  </motion.div>
+                  <motion.h4
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    style={{ fontSize: 24, fontWeight: 700, color: '#059669', marginBottom: 12 }}
+                  >
+                    ¡Solicitud Enviada!
+                  </motion.h4>
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    style={{ color: '#6B7280' }}
+                  >
+                    Hemos recibido tu solicitud de cotización.<br />
+                    Te contactaremos en menos de {siteConfig.form.responseTime}.
+                  </motion.p>
                 </motion.div>
-                <motion.h4
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  style={{ fontSize: 24, fontWeight: 700, color: '#059669', marginBottom: 12 }}
-                >
-                  ¡Solicitud Enviada!
-                </motion.h4>
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                  style={{ color: '#6B7280' }}
-                >
-                  Hemos recibido tu solicitud de cotización.<br />
-                  Te contactaremos en menos de {siteConfig.form.responseTime}.
-                </motion.p>
-              </motion.div>
-            ) : (
-              <>
-                {activeStep === 0 && (
+              ) : (
+                <>
+                  {activeStep === 0 && (
                   <div style={{ animation: 'fadeInUp 0.5s ease' }}>
-                    <h4 style={{ fontSize: 20, fontWeight: 700, color: '#2E6A80', marginBottom: 24, textAlign: 'center' }}>
+                    <h4 id="form-step-title" style={{ fontSize: 20, fontWeight: 700, color: '#2E6A80', marginBottom: 24, textAlign: 'center' }}>
                       ¿Qué producto necesitas?
                     </h4>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
@@ -980,14 +920,22 @@ export default function TecnocartonLanding() {
                           style={{
                             padding: 20,
                             borderRadius: 12,
-                            border: `2px solid ${formData.producto === product.id ? '#EE7E31' : '#E5E7EB'}`,
+                            border: `2px solid ${formData.producto === product.id ? theme.colors.accent : '#E5E7EB'}`,
                             background: formData.producto === product.id ? '#FFF7ED' : 'white',
                             cursor: 'pointer',
                             textAlign: 'center',
                             transition: 'all 0.3s'
                           }}
                         >
-                          <div style={{ fontSize: 32, marginBottom: 8 }}>{product.icon}</div>
+                          <div style={{ width: 52, height: 52, borderRadius: 10, overflow: 'hidden', margin: '0 auto 10px', background: '#F8FAFB' }}>
+                            {product.image ? (
+                              <img src={product.image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                              <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${theme.colors.accent}, ${theme.colors.accentLight})` }}>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                              </div>
+                            )}
+                          </div>
                           <div style={{ fontSize: 13, fontWeight: 600, color: '#2E6A80' }}>{product.name}</div>
                         </div>
                       ))}
@@ -1005,7 +953,7 @@ export default function TecnocartonLanding() {
 
                 {activeStep === 1 && (
                   <div style={{ animation: 'fadeInUp 0.5s ease' }}>
-                    <h4 style={{ fontSize: 20, fontWeight: 700, color: '#2E6A80', marginBottom: 24, textAlign: 'center' }}>
+                    <h4 id="form-step-title" style={{ fontSize: 20, fontWeight: 700, color: '#2E6A80', marginBottom: 24, textAlign: 'center' }}>
                       Especificaciones del pedido
                     </h4>
                     <div style={{ display: 'grid', gap: 20 }}>
@@ -1051,9 +999,9 @@ export default function TecnocartonLanding() {
                                 style={{
                                   padding: '10px 20px',
                                   borderRadius: 8,
-                                  border: `2px solid ${formData.tiposCarton.includes(tipo) ? '#EE7E31' : '#E5E7EB'}`,
+                                  border: `2px solid ${formData.tiposCarton.includes(tipo) ? theme.colors.accent : '#E5E7EB'}`,
                                   background: formData.tiposCarton.includes(tipo) ? '#FFF7ED' : 'white',
-                                  color: formData.tiposCarton.includes(tipo) ? '#EE7E31' : '#374151',
+                                  color: formData.tiposCarton.includes(tipo) ? theme.colors.accent : theme.colors.textSecondary,
                                   fontWeight: 600,
                                   cursor: 'pointer',
                                   transition: 'all 0.2s'
@@ -1091,9 +1039,9 @@ export default function TecnocartonLanding() {
                                 style={{
                                   padding: '10px 16px',
                                   borderRadius: 8,
-                                  border: `2px solid ${formData.formatosRollo.includes(formato) ? '#EE7E31' : '#E5E7EB'}`,
+                                  border: `2px solid ${formData.formatosRollo.includes(formato) ? theme.colors.accent : '#E5E7EB'}`,
                                   background: formData.formatosRollo.includes(formato) ? '#FFF7ED' : 'white',
-                                  color: formData.formatosRollo.includes(formato) ? '#EE7E31' : '#374151',
+                                  color: formData.formatosRollo.includes(formato) ? theme.colors.accent : theme.colors.textSecondary,
                                   fontWeight: 600,
                                   cursor: 'pointer',
                                   transition: 'all 0.2s'
@@ -1127,8 +1075,9 @@ export default function TecnocartonLanding() {
                       </div>
                     </div>
                     <div className="form-buttons" style={{ display: 'flex', gap: 16, marginTop: 32 }}>
-                      <button className="btn-secondary" onClick={() => setActiveStep(0)}>
-                        ← Volver
+                      <button className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: 8 }} onClick={() => setActiveStep(0)}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+                        Volver
                       </button>
                       <button
                         className="btn-primary"
@@ -1143,7 +1092,7 @@ export default function TecnocartonLanding() {
 
                 {activeStep === 2 && (
                   <div style={{ animation: 'fadeInUp 0.5s ease' }}>
-                    <h4 style={{ fontSize: 20, fontWeight: 700, color: '#2E6A80', marginBottom: 24, textAlign: 'center' }}>
+                    <h4 id="form-step-title" style={{ fontSize: 20, fontWeight: 700, color: '#2E6A80', marginBottom: 24, textAlign: 'center' }}>
                       Datos de contacto
                     </h4>
                     <div style={{ display: 'grid', gap: 20 }}>
@@ -1211,8 +1160,9 @@ export default function TecnocartonLanding() {
                       </div>
                     </div>
                     <div className="form-buttons" style={{ display: 'flex', gap: 16, marginTop: 32 }}>
-                      <button className="btn-secondary" onClick={() => setActiveStep(1)}>
-                        ← Volver
+                      <button className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: 8 }} onClick={() => setActiveStep(1)}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+                        Volver
                       </button>
                       <button
                         className="btn-primary"
@@ -1238,7 +1188,8 @@ export default function TecnocartonLanding() {
                   </div>
                 )}
               </>
-            )}
+              )}
+            </div>
           </motion.div>
 
           {/* Quick contact */}
@@ -1298,7 +1249,7 @@ export default function TecnocartonLanding() {
                   <div style={{
                     width: 40,
                     height: 40,
-                    background: 'linear-gradient(135deg, #EE7E31, #f5a66d)',
+                    background: `linear-gradient(135deg, ${theme.colors.accent}, ${theme.colors.accentLight})`,
                     borderRadius: 10,
                     display: 'flex',
                     alignItems: 'center',
@@ -1322,7 +1273,7 @@ export default function TecnocartonLanding() {
                   <div style={{
                     width: 40,
                     height: 40,
-                    background: 'linear-gradient(135deg, #2E6A80, #3d8299)',
+                    background: `linear-gradient(135deg, ${theme.colors.primaryLight}, ${theme.colors.primary})`,
                     borderRadius: 10,
                     display: 'flex',
                     alignItems: 'center',
@@ -1337,7 +1288,7 @@ export default function TecnocartonLanding() {
                   <div>
                     <div style={{ fontWeight: 600, color: '#374151', marginBottom: 4 }}>Horario</div>
                     <div style={{ color: '#6B7280', lineHeight: 1.5 }}>
-                      Lun. a Jue.: 08:00 - 17:30 hrs<br />
+                      Lunes a Jueves: 08:00 - 17:30 hrs<br />
                       Viernes: 08:00 - 14:30 hrs
                     </div>
                   </div>
@@ -1392,6 +1343,7 @@ export default function TecnocartonLanding() {
               {[...clients, ...clients, ...clients].map((client, i) => (
                 <div
                   key={i}
+                  className="client-card"
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -1399,26 +1351,8 @@ export default function TecnocartonLanding() {
                     minWidth: 200,
                     height: 120,
                     padding: '16px 28px',
-                    background: '#E5E7EB',
                     borderRadius: 16,
                     boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                    filter: 'grayscale(100%)',
-                    opacity: 0.7,
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.filter = 'grayscale(0%)';
-                    e.currentTarget.style.opacity = '1';
-                    e.currentTarget.style.transform = 'scale(1.05)';
-                    e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.12)';
-                    e.currentTarget.style.background = 'white';
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.filter = 'grayscale(100%)';
-                    e.currentTarget.style.opacity = '0.7';
-                    e.currentTarget.style.transform = 'scale(1)';
-                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)';
-                    e.currentTarget.style.background = '#E5E7EB';
                   }}
                 >
                   <img
@@ -1449,7 +1383,7 @@ export default function TecnocartonLanding() {
         variants={fadeInUp}
         transition={{ duration: 0.6 }}
         style={{
-          background: '#1a1a2e',
+          background: theme.colors.primaryDark,
           color: 'white',
           padding: '60px 24px 30px'
         }}
@@ -1474,8 +1408,9 @@ export default function TecnocartonLanding() {
                 <img
                   src={siteConfig.company.logo}
                   alt={siteConfig.company.name}
+                  className="footer-logo"
                   style={{
-                    height: 75,
+                    height: 72,
                     width: 'auto',
                     objectFit: 'contain'
                   }}
@@ -1491,6 +1426,7 @@ export default function TecnocartonLanding() {
                     href={siteConfig.social.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="footer-linkedin-btn"
                     style={{
                       width: 40,
                       height: 40,
@@ -1499,15 +1435,6 @@ export default function TecnocartonLanding() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      transition: 'all 0.3s'
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.background = '#0077B5';
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
-                      e.currentTarget.style.transform = 'translateY(0)';
                     }}
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
@@ -1520,47 +1447,28 @@ export default function TecnocartonLanding() {
 
             {/* Products */}
             <div>
-              <h5 style={{ fontWeight: 700, marginBottom: 20, color: '#EE7E31' }}>Productos</h5>
+              <h5 style={{ fontWeight: 700, marginBottom: 20, color: theme.colors.accent }}>Productos</h5>
               {products.map((product, i) => (
-                <a key={i} href="#productos" onClick={(e) => scrollToSection(e, 'productos')} style={{
-                  display: 'block',
-                  color: 'rgba(255,255,255,0.6)',
-                  textDecoration: 'none',
-                  marginBottom: 10,
-                  fontSize: 14,
-                  transition: 'color 0.3s'
-                }}
-                onMouseEnter={e => e.currentTarget.style.color = 'white'}
-                onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
-                >{product.name}</a>
+                <a key={i} href="#productos" onClick={(e) => scrollToSection(e, 'productos')} className="footer-link">{product.name}</a>
               ))}
             </div>
 
             {/* Company */}
             <div>
-              <h5 style={{ fontWeight: 700, marginBottom: 20, color: '#EE7E31' }}>Empresa</h5>
+              <h5 style={{ fontWeight: 700, marginBottom: 20, color: theme.colors.accent }}>Empresa</h5>
               {footerLinks.map((item, i) => (
                 <a
                   key={i}
                   href={item.href || (item.section ? `#${item.section}` : '#')}
                   onClick={(e) => item.section && scrollToSection(e, item.section)}
-                  style={{
-                    display: 'block',
-                    color: 'rgba(255,255,255,0.6)',
-                    textDecoration: 'none',
-                    marginBottom: 10,
-                    fontSize: 14,
-                    transition: 'color 0.3s'
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.color = 'white'}
-                  onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
+                  className="footer-link"
                 >{item.name}</a>
               ))}
             </div>
 
             {/* Contact */}
             <div>
-              <h5 style={{ fontWeight: 700, marginBottom: 20, color: '#EE7E31' }}>Contacto</h5>
+              <h5 style={{ fontWeight: 700, marginBottom: 20, color: theme.colors.accent }}>Contacto</h5>
               <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, lineHeight: 2 }}>
                 <div>{siteConfig.address.full}</div>
                 <div>
@@ -1589,17 +1497,14 @@ export default function TecnocartonLanding() {
                 href={siteConfig.social.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="footer-linkedin-link"
                 style={{
-                  color: 'rgba(255,255,255,0.4)',
                   textDecoration: 'none',
                   fontSize: 13,
-                  transition: 'color 0.3s',
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6
                 }}
-                onMouseEnter={e => e.currentTarget.style.color = '#0077B5'}
-                onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
