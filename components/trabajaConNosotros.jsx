@@ -3,8 +3,12 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { siteConfig, jobOffers } from '../config/site';
+import { TrendingUp, Users, Shield } from 'lucide-react';
+import { siteConfig, jobOffers, theme } from '../config/site';
 import { trackPostulacionEnviada } from '../lib/analytics';
+import SharedFooter from './shared-footer';
+import { SectionBeams } from './ui/section-beams';
+import './landing.css';
 
 // Animation variants
 const fadeInUp = {
@@ -25,8 +29,28 @@ const scaleIn = {
   visible: { opacity: 1, scale: 1 }
 };
 
+const benefits = [
+  {
+    icon: <TrendingUp size={32} color={theme.colors.primaryLight} strokeWidth={2} />,
+    iconBg: '#E8F4F8',
+    title: 'Crecimiento',
+    desc: 'Oportunidades de desarrollo y capacitación continua'
+  },
+  {
+    icon: <Users size={32} color={theme.colors.accent} strokeWidth={2} />,
+    iconBg: 'rgba(230,118,53,0.1)',
+    title: 'Buen ambiente',
+    desc: 'Equipo colaborativo y ambiente laboral positivo'
+  },
+  {
+    icon: <Shield size={32} color={theme.colors.success} strokeWidth={2} />,
+    iconBg: '#E8F9F0',
+    title: 'Estabilidad',
+    desc: 'Empresa sólida con más de 20 años en el mercado'
+  }
+];
+
 export default function TrabajaConNosotros() {
-  const [currentYear, setCurrentYear] = useState('');
   const [formData, setFormData] = useState({
     nombre: '',
     email: '',
@@ -34,16 +58,18 @@ export default function TrabajaConNosotros() {
     motivacion: '',
     cv: null
   });
-
-  // Obtener el año actual solo en el cliente para evitar error de hidratación
-  useEffect(() => {
-    setCurrentYear(new Date().getFullYear().toString());
-  }, []);
   const [formErrors, setFormErrors] = useState({});
   const [formStatus, setFormStatus] = useState({ loading: false, success: false, error: null });
   const [selectedOffer, setSelectedOffer] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Filtrar solo ofertas activas
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const activeOffers = jobOffers.filter(offer => offer.active);
 
   const handleInputChange = (e) => {
@@ -56,42 +82,27 @@ export default function TrabajaConNosotros() {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      // Validar tipo de archivo (solo PDF)
-      if (file.type !== 'application/pdf') {
-        setFormErrors(prev => ({ ...prev, cv: 'Solo se permiten archivos PDF' }));
-        return;
-      }
-      // Validar tamaño (máximo 2MB)
-      if (file.size > 2 * 1024 * 1024) {
-        setFormErrors(prev => ({ ...prev, cv: 'El archivo no puede superar los 2MB' }));
-        return;
-      }
-      setFormData(prev => ({ ...prev, cv: file }));
-      setFormErrors(prev => ({ ...prev, cv: null }));
+    if (!file) return;
+    if (file.type !== 'application/pdf') {
+      setFormErrors(prev => ({ ...prev, cv: 'Solo se permiten archivos PDF' }));
+      return;
     }
+    if (file.size > 2 * 1024 * 1024) {
+      setFormErrors(prev => ({ ...prev, cv: 'El archivo no puede superar los 2MB' }));
+      return;
+    }
+    setFormData(prev => ({ ...prev, cv: file }));
+    setFormErrors(prev => ({ ...prev, cv: null }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validar campos
     const errors = {};
-    if (!formData.nombre || formData.nombre.trim().length < 2) {
-      errors.nombre = 'Nombre requerido';
-    }
-    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = 'Email inválido';
-    }
-    if (!formData.telefono || formData.telefono.replace(/\D/g, '').length < 8) {
-      errors.telefono = 'Teléfono inválido';
-    }
-    if (!formData.motivacion || formData.motivacion.trim().length < 20) {
-      errors.motivacion = 'Cuéntanos más sobre ti (mínimo 20 caracteres)';
-    }
-    if (!formData.cv) {
-      errors.cv = 'Debes adjuntar tu CV';
-    }
+    if (!formData.nombre || formData.nombre.trim().length < 2) errors.nombre = 'Nombre requerido';
+    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) errors.email = 'Email inválido';
+    if (!formData.telefono || formData.telefono.replace(/\D/g, '').length < 8) errors.telefono = 'Teléfono inválido';
+    if (!formData.motivacion || formData.motivacion.trim().length < 20) errors.motivacion = 'Cuéntanos más sobre ti (mínimo 20 caracteres)';
+    if (!formData.cv) errors.cv = 'Debes adjuntar tu CV';
 
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -101,7 +112,6 @@ export default function TrabajaConNosotros() {
     setFormStatus({ loading: true, success: false, error: null });
 
     try {
-      // Crear FormData para enviar archivo
       const submitData = new FormData();
       submitData.append('nombre', formData.nombre);
       submitData.append('email', formData.email);
@@ -109,31 +119,17 @@ export default function TrabajaConNosotros() {
       submitData.append('motivacion', formData.motivacion);
       submitData.append('cv', formData.cv);
 
-      const response = await fetch('/api/postulacion', {
-        method: 'POST',
-        body: submitData
-      });
-
+      const response = await fetch('/api/postulacion', { method: 'POST', body: submitData });
       const data = await response.json();
 
       if (data.success) {
         setFormStatus({ loading: false, success: true, error: null });
-
-        // Registrar conversión en Google Ads y GTM
         trackPostulacionEnviada({
           nombre: formData.nombre,
           oferta: selectedOffer?.titulo || 'Postulación espontánea',
         });
-
-        // Reset form
         setTimeout(() => {
-          setFormData({
-            nombre: '',
-            email: '',
-            telefono: '',
-            motivacion: '',
-            cv: null
-          });
+          setFormData({ nombre: '', email: '', telefono: '', motivacion: '', cv: null });
           setFormStatus({ loading: false, success: false, error: null });
         }, 5000);
       } else {
@@ -146,145 +142,41 @@ export default function TrabajaConNosotros() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F8FAFB' }}>
-      {/* Google Fonts - Roboto */}
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
-
+    <div style={{ fontFamily: "'DM Sans', 'Segoe UI', system-ui, sans-serif", minHeight: '100vh', background: '#F8FAFB' }}>
       <style dangerouslySetInnerHTML={{ __html: `
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
-        body {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        }
-        .btn-primary {
-          background: linear-gradient(135deg, #EE7E31, #f5a66d);
-          color: white;
-          padding: 14px 28px;
-          border: none;
-          border-radius: 8px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s;
-        }
-        .btn-primary:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(238,126,49,0.4);
-        }
-        .btn-primary:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
-          transform: none;
-        }
-        .btn-secondary {
-          background: white;
-          color: #2E6A80;
-          padding: 14px 28px;
-          border: 2px solid #2E6A80;
-          border-radius: 8px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s;
-        }
-        .btn-secondary:hover {
-          background: #2E6A80;
-          color: white;
-        }
-        .card {
-          background: white;
-          border-radius: 16px;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-        input, textarea, select {
-          width: 100%;
-          padding: 14px 16px;
-          border: 2px solid #E5E7EB;
-          border-radius: 8px;
-          font-size: 15px;
-          transition: all 0.3s;
-          background: white;
-        }
-        input:focus, textarea:focus, select:focus {
-          outline: none;
-          border-color: #2E6A80;
-          box-shadow: 0 0 0 3px rgba(46,106,128,0.1);
-        }
-        input.error, textarea.error, select.error {
-          border-color: #EF4444;
-        }
         .file-input-wrapper {
           position: relative;
-          border: 2px dashed #E5E7EB;
-          border-radius: 8px;
+          border: 2px dashed var(--color-border-input);
+          border-radius: 12px;
           padding: 24px;
           text-align: center;
           cursor: pointer;
           transition: all 0.3s;
         }
         .file-input-wrapper:hover {
-          border-color: #2E6A80;
-          background: rgba(46,106,128,0.02);
+          border-color: var(--color-primary);
+          background: rgba(27,77,92,0.02);
         }
         .file-input-wrapper.has-file {
-          border-color: #059669;
-          background: rgba(5,150,105,0.05);
+          border-color: var(--color-success);
+          background: var(--color-success-bg);
         }
         .file-input-wrapper.error {
-          border-color: #EF4444;
+          border-color: var(--color-error);
         }
-        .gradient-text {
-          background: linear-gradient(135deg, #2E6A80 0%, #1a4a5c 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-        /* Responsive Design */
         @media (max-width: 768px) {
-          .benefits-grid {
-            grid-template-columns: 1fr !important;
-          }
-          .jobs-grid {
-            grid-template-columns: 1fr !important;
-          }
-          .section-padding {
-            padding: 60px 16px !important;
-          }
-          .hero-section {
-            padding: 120px 16px 60px !important;
-          }
-          .form-card {
-            padding: 24px !important;
-          }
-          .nav-container {
-            padding: 12px 16px !important;
-          }
+          .benefits-grid { grid-template-columns: 1fr !important; }
+          .jobs-grid { grid-template-columns: 1fr !important; }
+          .form-card { padding: 24px !important; }
         }
         @media (max-width: 500px) {
-          .hero-section {
-            padding: 100px 12px 40px !important;
-          }
-          .form-card {
-            padding: 16px !important;
-          }
-          .btn-primary, .btn-secondary {
-            padding: 12px 24px;
-            font-size: 14px;
-          }
-          .benefits-grid {
-            gap: 16px !important;
-          }
+          .form-card { padding: 16px !important; }
         }
       ` }} />
 
-      {/* Header */}
+      {/* Navigation */}
       <motion.nav
+        className="nav-shimmer"
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ type: 'spring', stiffness: 100, damping: 20 }}
@@ -295,46 +187,89 @@ export default function TrabajaConNosotros() {
           right: 0,
           zIndex: 1000,
           background: '#FEFEFE',
-          boxShadow: '0 2px 20px rgba(0,0,0,0.1)'
+          boxShadow: scrolled ? '0 2px 20px rgba(0,0,0,0.1)' : '0 1px 3px rgba(0,0,0,0.05)',
+          transition: 'box-shadow 0.3s'
         }}
       >
-        <div className="nav-container" style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
             <img
               src={siteConfig.company.logo}
               alt={siteConfig.company.name}
-              style={{
-                height: 67.5,
-                width: 'auto',
-                objectFit: 'contain'
-              }}
+              style={{ height: 72, width: 'auto', objectFit: 'contain' }}
             />
           </Link>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Link href="/" className="btn-secondary" style={{ textDecoration: 'none' }}>
-              Volver al inicio
+
+          {/* Desktop Navigation */}
+          <div className="desktop-nav">
+            <Link href="/proceso" className="nav-link">Proceso</Link>
+            <Link href="/trabaja-con-nosotros" className="nav-link" style={{ background: 'rgba(46,106,128,0.08)' }}>Trabaja con Nosotros</Link>
+            <Link href="/#cotizar" className="btn-primary desktop-nav-cta" style={{ textDecoration: 'none' }}>
+              Cotizar Ahora
             </Link>
-          </motion.div>
+          </div>
+
+          {/* Hamburger */}
+          <button
+            className={`hamburger always-visible ${isMenuOpen ? 'open' : ''}`}
+            onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }}
+            aria-label={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            aria-expanded={isMenuOpen}
+          >
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </button>
+
+          {/* Mobile Menu */}
+          <nav className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
+            <Link href="/proceso" onClick={() => setIsMenuOpen(false)} className="nav-link">Proceso</Link>
+            <Link href="/trabaja-con-nosotros" onClick={() => setIsMenuOpen(false)} className="nav-link">Trabaja con Nosotros</Link>
+            <Link href="/#cotizar" onClick={() => setIsMenuOpen(false)} className="btn-primary" style={{ textAlign: 'center', textDecoration: 'none', marginTop: 8 }}>
+              Cotizar Ahora
+            </Link>
+          </nav>
         </div>
       </motion.nav>
 
       {/* Hero */}
-      <section className="hero-section" style={{
-        background: 'linear-gradient(135deg, #2E6A80 0%, #1a4a5c 100%)',
+      <section style={{
+        background: `linear-gradient(135deg, ${theme.colors.primaryLight} 0%, ${theme.colors.primaryDark} 100%)`,
         padding: '140px 24px 80px',
-        textAlign: 'center'
+        textAlign: 'center',
+        position: 'relative',
+        overflow: 'hidden'
       }}>
+        <SectionBeams />
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          style={{ maxWidth: 700, margin: '0 auto' }}
+          style={{ maxWidth: 700, margin: '0 auto', position: 'relative', zIndex: 1 }}
         >
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            style={{
+              display: 'inline-block',
+              background: 'rgba(230,118,53,0.2)',
+              color: theme.colors.accentLight,
+              padding: '8px 16px',
+              borderRadius: 20,
+              fontSize: 13,
+              fontWeight: 600,
+              marginBottom: 20,
+              border: '1px solid rgba(230,118,53,0.3)'
+            }}
+          >
+            Únete al equipo
+          </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 900, color: 'white', marginBottom: 16 }}
+            style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 900, color: 'white', marginBottom: 16, letterSpacing: '-0.02em' }}
           >
             Trabaja con nosotros
           </motion.h1>
@@ -342,7 +277,7 @@ export default function TrabajaConNosotros() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            style={{ fontSize: 18, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}
+            style={{ fontSize: 18, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7 }}
           >
             Únete a nuestro equipo y forma parte de una empresa líder en soluciones de embalaje.
             Buscamos personas comprometidas y con ganas de crecer profesionalmente.
@@ -351,7 +286,7 @@ export default function TrabajaConNosotros() {
       </section>
 
       {/* Benefits */}
-      <section className="section-padding" style={{ padding: '60px 24px', background: 'white' }}>
+      <section className="section-padding" style={{ padding: '80px 24px', background: 'white' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <motion.div
             initial="hidden"
@@ -359,13 +294,12 @@ export default function TrabajaConNosotros() {
             viewport={{ once: true, margin: '-100px' }}
             variants={fadeInUp}
             transition={{ duration: 0.6 }}
+            style={{ textAlign: 'center', marginBottom: 48 }}
           >
-            <h2 style={{ textAlign: 'center', fontSize: 14, fontWeight: 700, color: '#EE7E31', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 12 }}>
-              Beneficios
-            </h2>
-            <h3 className="gradient-text" style={{ textAlign: 'center', fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 900, marginBottom: 40 }}>
+            <div className="section-label">Beneficios</div>
+            <h2 style={{ fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 900, color: theme.colors.primaryLight, marginBottom: 0, letterSpacing: '-0.02em' }}>
               ¿Por qué trabajar en Tecnocarton?
-            </h3>
+            </h2>
           </motion.div>
           <motion.div
             initial="hidden"
@@ -375,33 +309,40 @@ export default function TrabajaConNosotros() {
             className="benefits-grid"
             style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 24 }}
           >
-            {[
-              { icon: '📈', title: 'Crecimiento', desc: 'Oportunidades de desarrollo y capacitación continua' },
-              { icon: '🤝', title: 'Buen ambiente', desc: 'Equipo colaborativo y ambiente laboral positivo' },
-              { icon: '⚖️', title: 'Estabilidad', desc: 'Empresa sólida con más de 20 años en el mercado' }
-            ].map((benefit, i) => (
+            {benefits.map((benefit, i) => (
               <motion.div
                 key={i}
                 variants={fadeInUp}
                 whileHover={{ y: -8, boxShadow: '0 20px 40px rgba(46,106,128,0.15)' }}
                 transition={{ duration: 0.3 }}
                 className="card"
-                style={{ padding: 24, textAlign: 'center' }}
+                style={{ padding: 32, textAlign: 'center' }}
               >
                 <motion.div
-                  whileHover={{ scale: 1.2 }}
+                  whileHover={{ scale: 1.1 }}
                   transition={{ type: 'spring', stiffness: 300 }}
-                  style={{ fontSize: 40, marginBottom: 12 }}
-                >{benefit.icon}</motion.div>
-                <h4 style={{ fontSize: 18, fontWeight: 700, color: '#2E6A80', marginBottom: 8 }}>{benefit.title}</h4>
-                <p style={{ fontSize: 14, color: '#6B7280', lineHeight: 1.6 }}>{benefit.desc}</p>
+                  style={{
+                    width: 72,
+                    height: 72,
+                    background: benefit.iconBg,
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto 20px'
+                  }}
+                >
+                  {benefit.icon}
+                </motion.div>
+                <h4 style={{ fontSize: 18, fontWeight: 700, color: theme.colors.primaryLight, marginBottom: 8 }}>{benefit.title}</h4>
+                <p style={{ fontSize: 14, color: theme.colors.textMuted, lineHeight: 1.6 }}>{benefit.desc}</p>
               </motion.div>
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* Job Offers Section */}
+      {/* Job Offers */}
       {activeOffers.length > 0 && (
         <section className="section-padding" style={{ padding: '60px 24px', background: '#F8FAFB' }}>
           <div style={{ maxWidth: 1000, margin: '0 auto' }}>
@@ -413,13 +354,11 @@ export default function TrabajaConNosotros() {
               transition={{ duration: 0.6 }}
               style={{ textAlign: 'center', marginBottom: 40 }}
             >
-              <h2 style={{ fontSize: 14, fontWeight: 700, color: '#EE7E31', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 12 }}>
-                Ofertas de Empleo
-              </h2>
-              <h3 className="gradient-text" style={{ fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 900, marginBottom: 12 }}>
+              <div className="section-label">Ofertas de Empleo</div>
+              <h2 style={{ fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 900, color: theme.colors.primaryLight, marginBottom: 12, letterSpacing: '-0.02em' }}>
                 Vacantes disponibles
-              </h3>
-              <p style={{ color: '#6B7280', maxWidth: 500, margin: '0 auto' }}>
+              </h2>
+              <p style={{ color: theme.colors.textMuted, maxWidth: 500, margin: '0 auto' }}>
                 Conoce nuestras ofertas laborales vigentes y postula directamente al cargo que te interesa.
               </p>
             </motion.div>
@@ -442,7 +381,7 @@ export default function TrabajaConNosotros() {
                   style={{
                     padding: 0,
                     overflow: 'hidden',
-                    border: selectedOffer === offer.id ? '2px solid #2E6A80' : '2px solid transparent'
+                    border: `2px solid ${selectedOffer === offer.id ? theme.colors.primaryLight : 'transparent'}`
                   }}
                 >
                   <div
@@ -459,31 +398,17 @@ export default function TrabajaConNosotros() {
                   >
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8, flexWrap: 'wrap' }}>
-                        <h4 style={{ fontSize: 20, fontWeight: 700, color: '#2E6A80', margin: 0 }}>{offer.title}</h4>
-                        <span style={{
-                          background: '#E8F4F8',
-                          color: '#2E6A80',
-                          padding: '4px 12px',
-                          borderRadius: 20,
-                          fontSize: 12,
-                          fontWeight: 600
-                        }}>{offer.department}</span>
-                        <span style={{
-                          background: 'rgba(238,126,49,0.1)',
-                          color: '#EE7E31',
-                          padding: '4px 12px',
-                          borderRadius: 20,
-                          fontSize: 12,
-                          fontWeight: 600
-                        }}>{offer.type}</span>
+                        <h4 style={{ fontSize: 20, fontWeight: 700, color: theme.colors.primaryLight, margin: 0 }}>{offer.title}</h4>
+                        <span className="badge badge-primary">{offer.department}</span>
+                        <span className="badge badge-accent">{offer.type}</span>
                       </div>
-                      <p style={{ color: '#6B7280', margin: 0, fontSize: 14 }}>{offer.description}</p>
+                      <p style={{ color: theme.colors.textMuted, margin: 0, fontSize: 14 }}>{offer.description}</p>
                     </div>
                     <div style={{
                       width: 36,
                       height: 36,
                       borderRadius: '50%',
-                      background: selectedOffer === offer.id ? '#2E6A80' : '#F3F4F6',
+                      background: selectedOffer === offer.id ? theme.colors.primaryLight : '#F3F4F6',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -491,34 +416,23 @@ export default function TrabajaConNosotros() {
                       flexShrink: 0
                     }}>
                       <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke={selectedOffer === offer.id ? 'white' : '#6B7280'}
+                        width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke={selectedOffer === offer.id ? 'white' : theme.colors.textMuted}
                         strokeWidth="2"
-                        style={{
-                          transform: selectedOffer === offer.id ? 'rotate(180deg)' : 'rotate(0deg)',
-                          transition: 'transform 0.3s'
-                        }}
+                        style={{ transform: selectedOffer === offer.id ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }}
                       >
                         <polyline points="6 9 12 15 18 9"/>
                       </svg>
                     </div>
                   </div>
 
-                  {/* Expanded content */}
-                  <div style={{
-                    maxHeight: selectedOffer === offer.id ? 400 : 0,
-                    overflow: 'hidden',
-                    transition: 'max-height 0.3s ease-in-out'
-                  }}>
-                    <div style={{ padding: '0 24px 24px', borderTop: '1px solid #E5E7EB' }}>
+                  <div style={{ maxHeight: selectedOffer === offer.id ? 400 : 0, overflow: 'hidden', transition: 'max-height 0.3s ease-in-out' }}>
+                    <div style={{ padding: '0 24px 24px', borderTop: `1px solid ${theme.colors.borderInput}` }}>
                       <div style={{ paddingTop: 20 }}>
-                        <h5 style={{ fontSize: 14, fontWeight: 700, color: '#374151', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
+                        <h5 style={{ fontSize: 13, fontWeight: 700, color: theme.colors.textSecondary, marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
                           Requisitos
                         </h5>
-                        <ul style={{ margin: 0, paddingLeft: 20, color: '#6B7280', lineHeight: 1.8 }}>
+                        <ul style={{ margin: 0, paddingLeft: 20, color: theme.colors.textMuted, lineHeight: 1.8 }}>
                           {offer.requirements.map((req, i) => (
                             <li key={i} style={{ marginBottom: 4 }}>{req}</li>
                           ))}
@@ -531,17 +445,10 @@ export default function TrabajaConNosotros() {
                             document.getElementById('postular').scrollIntoView({ behavior: 'smooth' });
                           }}
                           className="btn-primary"
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: 8,
-                            marginTop: 20,
-                            textDecoration: 'none'
-                          }}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 20, textDecoration: 'none' }}
                         >
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <line x1="22" y1="2" x2="11" y2="13"/>
-                            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
                           </svg>
                           Postular a este cargo
                         </a>
@@ -555,9 +462,10 @@ export default function TrabajaConNosotros() {
         </section>
       )}
 
-      {/* Form Section */}
-      <section id="postular" className="section-padding" style={{ padding: '60px 24px 80px' }}>
-        <div style={{ maxWidth: 700, margin: '0 auto' }}>
+      {/* Application Form */}
+      <section id="postular" className="section-padding" style={{ padding: '80px 24px', background: `linear-gradient(135deg, ${theme.colors.primaryLight} 0%, ${theme.colors.primaryDark} 100%)`, position: 'relative', overflow: 'hidden' }}>
+        <SectionBeams />
+        <div style={{ maxWidth: 700, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -566,13 +474,13 @@ export default function TrabajaConNosotros() {
             transition={{ duration: 0.6 }}
             style={{ textAlign: 'center', marginBottom: 40 }}
           >
-            <h2 style={{ fontSize: 14, fontWeight: 700, color: '#EE7E31', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 12 }}>
+            <h2 style={{ fontSize: 14, fontWeight: 700, color: theme.colors.accent, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 12 }}>
               {activeOffers.length > 0 ? 'Postulación espontánea' : 'Postula ahora'}
             </h2>
-            <h3 className="gradient-text" style={{ fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 900, marginBottom: 12 }}>
+            <h3 style={{ fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 900, color: 'white', marginBottom: 12, letterSpacing: '-0.02em' }}>
               Envíanos tu postulación
             </h3>
-            <p style={{ color: '#6B7280' }}>
+            <p style={{ color: 'rgba(255,255,255,0.8)' }}>
               {activeOffers.length > 0
                 ? 'Si no encuentras una vacante que se ajuste a tu perfil, envíanos tu CV para futuras oportunidades.'
                 : `Completa el formulario y adjunta tu CV. Te contactaremos en menos de ${siteConfig.recruitment.responseTime}.`
@@ -589,46 +497,62 @@ export default function TrabajaConNosotros() {
             className="card form-card"
             style={{ padding: 40 }}
           >
-            {formStatus.error && (
-              <div style={{
-                background: '#FEF2F2',
-                border: '1px solid #FECACA',
-                borderRadius: 8,
-                padding: 16,
-                marginBottom: 20,
-                color: '#DC2626',
-                fontSize: 14
-              }}>
-                {formStatus.error}
-              </div>
-            )}
+            <AnimatePresence>
+              {formStatus.error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  style={{
+                    background: '#FEF2F2',
+                    border: '1px solid #FECACA',
+                    borderRadius: 8,
+                    padding: 16,
+                    marginBottom: 20,
+                    color: theme.colors.error,
+                    fontSize: 14
+                  }}
+                >
+                  {formStatus.error}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {formStatus.success ? (
-              <div style={{ textAlign: 'center', padding: 40 }}>
-                <div style={{
-                  width: 80,
-                  height: 80,
-                  background: 'linear-gradient(135deg, #059669, #10B981)',
-                  borderRadius: '50%',
-                  margin: '0 auto 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                style={{ textAlign: 'center', padding: 40 }}
+              >
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 200, delay: 0.1 }}
+                  style={{
+                    width: 80, height: 80,
+                    background: `linear-gradient(135deg, ${theme.colors.success}, ${theme.colors.successLight})`,
+                    borderRadius: '50%',
+                    margin: '0 auto 16px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}
+                >
                   <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
                     <path d="M20 6L9 17l-5-5"/>
                   </svg>
-                </div>
-                <h4 style={{ fontSize: 24, fontWeight: 700, color: '#059669' }}>
+                </motion.div>
+                <h4 style={{ fontSize: 24, fontWeight: 700, color: theme.colors.success }}>
                   ¡Hemos recibido tu postulación!
                 </h4>
-              </div>
+                <p style={{ color: theme.colors.textMuted, marginTop: 8 }}>
+                  Te contactaremos en menos de {siteConfig.recruitment.responseTime}.
+                </p>
+              </motion.div>
             ) : (
               <form onSubmit={handleSubmit}>
                 <div style={{ display: 'grid', gap: 20 }}>
                   {/* Nombre */}
                   <div>
-                    <label htmlFor="nombre" style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: '#374151' }}>
+                    <label htmlFor="nombre" style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: theme.colors.textSecondary }}>
                       Nombre completo *
                     </label>
                     <input
@@ -642,7 +566,7 @@ export default function TrabajaConNosotros() {
                       className={formErrors.nombre ? 'error' : ''}
                     />
                     {formErrors.nombre && (
-                      <span style={{ color: '#EF4444', fontSize: 12, marginTop: 4, display: 'block' }}>
+                      <span style={{ color: theme.colors.error, fontSize: 12, marginTop: 4, display: 'block' }}>
                         {formErrors.nombre}
                       </span>
                     )}
@@ -651,7 +575,7 @@ export default function TrabajaConNosotros() {
                   {/* Email y Teléfono */}
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
                     <div>
-                      <label htmlFor="email" style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: '#374151' }}>
+                      <label htmlFor="email" style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: theme.colors.textSecondary }}>
                         Email *
                       </label>
                       <input
@@ -665,13 +589,13 @@ export default function TrabajaConNosotros() {
                         className={formErrors.email ? 'error' : ''}
                       />
                       {formErrors.email && (
-                        <span style={{ color: '#EF4444', fontSize: 12, marginTop: 4, display: 'block' }}>
+                        <span style={{ color: theme.colors.error, fontSize: 12, marginTop: 4, display: 'block' }}>
                           {formErrors.email}
                         </span>
                       )}
                     </div>
                     <div>
-                      <label htmlFor="telefono" style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: '#374151' }}>
+                      <label htmlFor="telefono" style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: theme.colors.textSecondary }}>
                         Teléfono *
                       </label>
                       <input
@@ -685,7 +609,7 @@ export default function TrabajaConNosotros() {
                         className={formErrors.telefono ? 'error' : ''}
                       />
                       {formErrors.telefono && (
-                        <span style={{ color: '#EF4444', fontSize: 12, marginTop: 4, display: 'block' }}>
+                        <span style={{ color: theme.colors.error, fontSize: 12, marginTop: 4, display: 'block' }}>
                           {formErrors.telefono}
                         </span>
                       )}
@@ -694,7 +618,7 @@ export default function TrabajaConNosotros() {
 
                   {/* Motivación */}
                   <div>
-                    <label htmlFor="motivacion" style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: '#374151' }}>
+                    <label htmlFor="motivacion" style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: theme.colors.textSecondary }}>
                       ¿Por qué quieres trabajar con nosotros? *
                     </label>
                     <textarea
@@ -705,10 +629,9 @@ export default function TrabajaConNosotros() {
                       value={formData.motivacion}
                       onChange={handleInputChange}
                       className={formErrors.motivacion ? 'error' : ''}
-                      style={{ fontFamily: "'Roboto', sans-serif" }}
                     />
                     {formErrors.motivacion && (
-                      <span style={{ color: '#EF4444', fontSize: 12, marginTop: 4, display: 'block' }}>
+                      <span style={{ color: theme.colors.error, fontSize: 12, marginTop: 4, display: 'block' }}>
                         {formErrors.motivacion}
                       </span>
                     )}
@@ -716,47 +639,38 @@ export default function TrabajaConNosotros() {
 
                   {/* CV Upload */}
                   <div>
-                    <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: '#374151' }}>
+                    <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: theme.colors.textSecondary }}>
                       Adjuntar CV *
                     </label>
                     <label
                       className={`file-input-wrapper ${formData.cv ? 'has-file' : ''} ${formErrors.cv ? 'error' : ''}`}
                       style={{ display: 'block' }}
                     >
-                      <input
-                        type="file"
-                        accept=".pdf"
-                        onChange={handleFileChange}
-                        style={{ display: 'none' }}
-                      />
+                      <input type="file" accept=".pdf" onChange={handleFileChange} style={{ display: 'none' }} />
                       {formData.cv ? (
                         <div>
-                          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" style={{ margin: '0 auto 8px', display: 'block' }}>
+                          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke={theme.colors.success} strokeWidth="2" style={{ margin: '0 auto 8px', display: 'block' }}>
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14 2 14 8 20 8"/>
-                            <path d="M9 15l2 2 4-4"/>
+                            <polyline points="14 2 14 8 20 8"/><path d="M9 15l2 2 4-4"/>
                           </svg>
-                          <div style={{ fontWeight: 600, color: '#059669' }}>{formData.cv.name}</div>
-                          <div style={{ fontSize: 13, color: '#6B7280', marginTop: 4 }}>
-                            {(formData.cv.size / 1024 / 1024).toFixed(2)} MB - Haz clic para cambiar
+                          <div style={{ fontWeight: 600, color: theme.colors.success }}>{formData.cv.name}</div>
+                          <div style={{ fontSize: 13, color: theme.colors.textMuted, marginTop: 4 }}>
+                            {(formData.cv.size / 1024 / 1024).toFixed(2)} MB — Haz clic para cambiar
                           </div>
                         </div>
                       ) : (
                         <div>
                           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" style={{ margin: '0 auto 8px', display: 'block' }}>
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                            <polyline points="17 8 12 3 7 8"/>
-                            <line x1="12" y1="3" x2="12" y2="15"/>
+                            <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
                           </svg>
-                          <div style={{ fontWeight: 600, color: '#374151' }}>Haz clic para subir tu CV</div>
-                          <div style={{ fontSize: 13, color: '#6B7280', marginTop: 4 }}>
-                            Solo PDF, máximo 2MB
-                          </div>
+                          <div style={{ fontWeight: 600, color: theme.colors.textSecondary }}>Haz clic para subir tu CV</div>
+                          <div style={{ fontSize: 13, color: theme.colors.textMuted, marginTop: 4 }}>Solo PDF, máximo 2MB</div>
                         </div>
                       )}
                     </label>
                     {formErrors.cv && (
-                      <span style={{ color: '#EF4444', fontSize: 12, marginTop: 4, display: 'block' }}>
+                      <span style={{ color: theme.colors.error, fontSize: 12, marginTop: 4, display: 'block' }}>
                         {formErrors.cv}
                       </span>
                     )}
@@ -779,16 +693,15 @@ export default function TrabajaConNosotros() {
                     ) : (
                       <>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <line x1="22" y1="2" x2="11" y2="13"/>
-                          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
                         </svg>
-                        Enviar Postulación
+                        Enviar postulación
                       </>
                     )}
                   </button>
 
-                  <p style={{ textAlign: 'center', fontSize: 13, color: '#8E9DA6' }}>
-                    Al enviar aceptas que procesemos tus datos para fines de selección de personal
+                  <p style={{ textAlign: 'center', fontSize: 13, color: theme.colors.textSubtle }}>
+                    Al enviar aceptas que procesemos tus datos para fines de selección de personal.
                   </p>
                 </div>
               </form>
@@ -797,38 +710,7 @@ export default function TrabajaConNosotros() {
         </div>
       </section>
 
-      {/* Footer */}
-      <motion.footer
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-50px' }}
-        variants={fadeInUp}
-        transition={{ duration: 0.6 }}
-        style={{
-          background: '#1a1a2e',
-          color: 'white',
-          padding: '40px 24px',
-          textAlign: 'center'
-        }}
-      >
-        <Link href="/" style={{ display: 'inline-block', marginBottom: 16 }}>
-          <img
-            src={siteConfig.company.logo}
-            alt={siteConfig.company.name}
-            style={{
-              height: 50,
-              width: 'auto',
-              objectFit: 'contain'
-            }}
-          />
-        </Link>
-        <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14 }}>
-          {siteConfig.address.full}
-        </p>
-        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, marginTop: 16 }}>
-          © {currentYear} {siteConfig.company.name}. Todos los derechos reservados.
-        </p>
-      </motion.footer>
+      <SharedFooter />
     </div>
   );
 }
