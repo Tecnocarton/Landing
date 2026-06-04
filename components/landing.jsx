@@ -88,7 +88,7 @@ export default function TecnocartonLanding() {
   const [formStatus, setFormStatus] = useState({ loading: false, success: false, error: null, quoteNumber: null });
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const carouselImages = ['/img1.jpeg', '/img2.jpeg'];
+  const carouselImages = ['/stock_cajas.png', '/img1.jpeg', '/img2.jpeg'];
 
   const scrolled = useScrolled(50);
   const [currentSlide, setCurrentSlide] = useCarousel(carouselImages.length, 5000);
