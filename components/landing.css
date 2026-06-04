@@ -451,18 +451,17 @@ input.error, textarea.error { border-color: #DC2626; box-shadow: 0 0 0 4px rgba(
 
 /* Client carousel card hover */
 .client-card {
-  filter: grayscale(100%);
-  opacity: 0.7;
-  transition: all 0.3s ease;
-  background: #E5E7EB;
+  filter: none;
+  opacity: 1;
+  transition: all 0.25s ease;
+  background: transparent;
 }
 
 .client-card:hover {
-  filter: grayscale(0%);
+  filter: none;
   opacity: 1;
   transform: scale(1.05);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-  background: white;
 }
 
 /* Skip link para navegación por teclado */
