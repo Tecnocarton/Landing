@@ -26,11 +26,11 @@ export const siteConfig = {
 
   // Dirección
   address: {
-    street: 'Las violetas',
+    street: 'Cam - Félix Del Solar, Padre Hurtado, Región Metropolitana',
     city: 'Padre hurtado',
-    region: 'Región metropolitana',
+    region: 'Región Metropolitana',
     country: 'Chile',
-    full: 'Las violetas, Padre hurtado, RM',
+    full: 'Cam - Félix Del Solar, Padre Hurtado, Región Metropolitana',
   },
 
   // Redes sociales
@@ -76,7 +76,8 @@ export const products = [
   {
     id: 'planchas',
     name: 'Planchas corrugadas',
-    desc: '12C, 14C, 17C, 20C',
+    desc: '12, 14, 17 y 20, en onda C, B y E'
+    ,
     minOrder: 'Mín. 1.500 unidades',
     image: '/productos/plancha.png',
     available: true
@@ -85,7 +86,7 @@ export const products = [
     id: 'rollos',
     name: 'Rollos de corrugado',
     desc: 'Múltiples gramajes',
-    minOrder: 'Mín. 300 kg',
+    minOrder: 'Mín. 500 kg',
     image: '/productos/carton corrugado.png',
     available: true
   },
@@ -93,7 +94,7 @@ export const products = [
     id: 'cajas',
     name: 'Cajas a medida',
     desc: 'Impresión hasta 2 colores',
-    minOrder: 'Mín. 500 unidades',
+    minOrder: 'Mín. 1.000 unidades',
     image: '/Caja-Convencional-1.jpg',
     available: true
   },

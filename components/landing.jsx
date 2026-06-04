@@ -968,9 +968,9 @@ export default function TecnocartonLanding() {
                           name="cantidad"
                           autoComplete="off"
                           placeholder={
-                            formData.producto === 'planchas' ? 'Ej: 1500 unidades' :
-                            formData.producto === 'rollos' ? 'Ej: 300 kg' :
-                            'Ej: 500 unidades'
+                            formData.producto === 'planchas' ? 'Ej: 1.500 unidades' :
+                            formData.producto === 'rollos' ? 'Ej: 500 kg' :
+                            'Ej: 1.000 unidades'
                           }
                           value={formData.cantidad}
                           onChange={handleInputChange}
@@ -1024,7 +1024,7 @@ export default function TecnocartonLanding() {
                             Formato de rollo en kg (puedes seleccionar varios)
                           </label>
                           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                            {['10', '20', '23', '25', '30', '35', '40', '45', '50'].map((formato) => (
+                            {['10', '20', '25', '30', '35'].map((formato) => (
                               <button
                                 key={formato}
                                 type="button"
@@ -1057,7 +1057,7 @@ export default function TecnocartonLanding() {
                       {/* Detalle adicional */}
                       <div>
                         <label htmlFor="detalle" style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: '#374151' }}>
-                          {'Detalles adicionales (opcional)'}
+                          {'Detalles y/o especificaciones'}
                         </label>
                         <textarea
                           id="detalle"
@@ -1067,11 +1067,26 @@ export default function TecnocartonLanding() {
                           placeholder={
                             formData.producto === 'planchas' ? 'Ej: Medidas, ancho 1200 x largo 2000 mm, ...' :
                             formData.producto === 'rollos' ? 'Ej: alto 1.2 m, para embalaje de muebles...' :
-                            'Especificaciones adicionales...'
+                            'Dimensiones internas largo x ancho x alto de la caja, tipo de impresión, cantidad de caras impresas (2 o 4),etc.'
                           }
                           value={formData.detalle}
                           onChange={handleInputChange}
                         />
+                        {/* Imagen de ejemplo de medidas: aparece debajo del textarea, dentro del recuadro blanco */}
+                        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12, marginBottom: 8 }}>
+                          <img
+                            src="/MEDIDAS.png"
+                            alt="Ejemplo medidas"
+                            loading="lazy"
+                            style={{
+                              maxWidth: 260,
+                              width: '40%',
+                              minWidth: 140,
+                              borderRadius: 8,
+                              boxShadow: '0 6px 18px rgba(0,0,0,0.08)'
+                            }}
+                          />
+                        </div>
                       </div>
                     </div>
                     <div className="form-buttons" style={{ display: 'flex', gap: 16, marginTop: 32 }}>
@@ -1352,7 +1367,7 @@ export default function TecnocartonLanding() {
                     height: 120,
                     padding: '16px 28px',
                     borderRadius: 16,
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                    boxShadow: '0 4px 20px rgba(255, 255, 255, 0.08)',
                   }}
                 >
                   <img
