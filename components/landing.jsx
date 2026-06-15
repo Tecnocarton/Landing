@@ -72,12 +72,151 @@ const scrollToSection = (e, sectionId) => {
 // Email validation regex - hoisted outside component (js-hoist-regexp)
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Selection options for cardboard type and flute (onda), used by planchas and cajas
+const TIPO_OPTIONS = ['12', '14', '17', '20'];
+const ONDA_OPTIONS = ['C', 'E', 'B'];
+
+// Quantity ranges per product (selected via dropdown)
+const CANTIDAD_RANGOS = {
+  planchas: ['Menos de 500', '500 - 1.000', '1.000 - 1.500', 'Más de 1.500'],
+  cajas: ['Menos de 500', '500 - 1.000', '1.000 - 5.000', 'Más de 5.000'],
+  rollos: ['250 - 500', '500 - 1.000', '1.000 - 2.000', 'Más de 2.000'],
+};
+
+// Reusable multi-select dropdown (looks like a select, allows multiple checked options)
+const MultiSelectDropdown = memo(({ label, options, selected, onChange, placeholder, suffix = '' }) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [open]);
+
+  const toggleOption = (option) => {
+    onChange(
+      selected.includes(option)
+        ? selected.filter(o => o !== option)
+        : [...selected, option]
+    );
+  };
+
+  const summary = selected.length > 0
+    ? selected.map(o => `${o}${suffix}`).join(', ')
+    : placeholder;
+
+  return (
+    <div>
+      {label && (
+        <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: '#374151' }}>
+          {label}
+        </label>
+      )}
+      <div ref={ref} style={{ position: 'relative' }}>
+        <button
+          type="button"
+          onClick={() => setOpen(o => !o)}
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 8,
+            padding: '12px 14px',
+            borderRadius: 8,
+            border: '2px solid #E5E7EB',
+            background: 'white',
+            color: selected.length > 0 ? '#374151' : '#9CA3AF',
+            fontWeight: selected.length > 0 ? 600 : 400,
+            fontSize: 15,
+            cursor: 'pointer',
+            textAlign: 'left'
+          }}
+        >
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{summary}</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </button>
+        {open && (
+          <div
+            role="listbox"
+            aria-multiselectable="true"
+            style={{
+              position: 'absolute',
+              top: 'calc(100% + 4px)',
+              left: 0,
+              right: 0,
+              zIndex: 10,
+              background: 'white',
+              border: '2px solid #E5E7EB',
+              borderRadius: 8,
+              boxShadow: '0 10px 30px rgba(0,0,0,0.12)',
+              overflow: 'hidden'
+            }}
+          >
+            {options.map((option) => {
+              const isSelected = selected.includes(option);
+              return (
+                <div
+                  key={option}
+                  role="option"
+                  aria-selected={isSelected}
+                  onClick={() => toggleOption(option)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: '10px 14px',
+                    cursor: 'pointer',
+                    background: isSelected ? '#FFF7ED' : 'white',
+                    color: isSelected ? theme.colors.accent : '#374151',
+                    fontWeight: isSelected ? 600 : 400
+                  }}
+                >
+                  <span style={{
+                    width: 18,
+                    height: 18,
+                    flexShrink: 0,
+                    borderRadius: 4,
+                    border: `2px solid ${isSelected ? theme.colors.accent : '#D1D5DB'}`,
+                    background: isSelected ? theme.colors.accent : 'white',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    {isSelected && (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 6L9 17l-5-5"/>
+                      </svg>
+                    )}
+                  </span>
+                  {option}{suffix}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+});
+
+MultiSelectDropdown.displayName = 'MultiSelectDropdown';
+
 export default function TecnocartonLanding() {
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
     producto: '',
     cantidad: '',
-    tiposCarton: [], // Para planchas: 12C, 14C, 17C, 20C
+    tiposCarton: [], // Para planchas/cajas: 12, 14, 17, 20
+    ondas: [], // Para planchas/cajas: C, E, B
     formatosRollo: [], // Para rollos: 10, 20, 23, 25, 30, 35, 40, 45, 50 kg
     detalle: '', // Detalles adicionales
     empresa: '',
@@ -190,6 +329,7 @@ export default function TecnocartonLanding() {
             producto: '',
             cantidad: '',
             tiposCarton: [],
+            ondas: [],
             formatosRollo: [],
             detalle: '',
             empresa: '',
@@ -653,17 +793,6 @@ export default function TecnocartonLanding() {
                 </div>
                 <h4 style={{ fontSize: 16, fontWeight: 700, color: '#2E6A80', marginBottom: 8 }}>{product.name}</h4>
                 <p style={{ fontSize: 13, color: '#374151', fontWeight: 500, marginBottom: 8 }}>{product.desc}</p>
-                {product.minOrder && (
-                  <p style={{
-                    fontSize: 11,
-                    color: theme.colors.accent,
-                    fontWeight: 600,
-                    background: 'rgba(230,118,53,0.1)',
-                    padding: '4px 8px',
-                    borderRadius: 4,
-                    display: 'inline-block'
-                  }}>{product.minOrder}</p>
-                )}
               </motion.a>
             ))}
           </motion.div>
@@ -957,63 +1086,61 @@ export default function TecnocartonLanding() {
                       Especificaciones del pedido
                     </h4>
                     <div style={{ display: 'grid', gap: 20 }}>
-                      {/* Cantidad - adaptada según producto */}
+                      {/* Cantidad - desplegable de rangos según producto */}
                       <div>
                         <label htmlFor="cantidad" style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: '#374151' }}>
                           Cantidad aproximada
                         </label>
-                        <input
-                          type="text"
+                        <select
                           id="cantidad"
                           name="cantidad"
-                          autoComplete="off"
-                          placeholder={
-                            formData.producto === 'planchas' ? 'Ej: 1.500 unidades' :
-                            formData.producto === 'rollos' ? 'Ej: 500 kg' :
-                            'Ej: 1.000 unidades'
-                          }
                           value={formData.cantidad}
                           onChange={handleInputChange}
-                        />
+                          className={formErrors.cantidad ? 'error' : ''}
+                          style={{
+                            width: '100%',
+                            padding: '12px 14px',
+                            borderRadius: 8,
+                            border: `2px solid ${formErrors.cantidad ? '#EF4444' : '#E5E7EB'}`,
+                            background: 'white',
+                            color: formData.cantidad ? '#374151' : '#9CA3AF',
+                            fontSize: 15,
+                            fontWeight: formData.cantidad ? 600 : 400,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          <option value="">Selecciona un rango</option>
+                          {(CANTIDAD_RANGOS[formData.producto] || []).map((rango) => {
+                            const unidad = formData.producto === 'rollos' ? 'kg' : 'unidades';
+                            return (
+                              <option key={rango} value={`${rango} ${unidad}`}>{rango} {unidad}</option>
+                            );
+                          })}
+                        </select>
+                        {formErrors.cantidad && (
+                          <span style={{ color: '#EF4444', fontSize: 12, marginTop: 4, display: 'block' }}>
+                            {formErrors.cantidad}
+                          </span>
+                        )}
                       </div>
 
-                      {/* Tipos de cartón para Planchas */}
-                      {formData.producto === 'planchas' && (
-                        <div>
-                          <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: '#374151' }}>
-                            Tipo de cartón (puedes seleccionar varios)
-                          </label>
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                            {['12C', '14C', '17C', '20C'].map((tipo) => (
-                              <button
-                                key={tipo}
-                                type="button"
-                                onClick={() => {
-                                  setFormData(prev => ({
-                                    ...prev,
-                                    tiposCarton: prev.tiposCarton.includes(tipo)
-                                      ? prev.tiposCarton.filter(t => t !== tipo)
-                                      : [...prev.tiposCarton, tipo]
-                                  }));
-                                }}
-                                style={{
-                                  padding: '10px 20px',
-                                  borderRadius: 8,
-                                  border: `2px solid ${formData.tiposCarton.includes(tipo) ? theme.colors.accent : '#E5E7EB'}`,
-                                  background: formData.tiposCarton.includes(tipo) ? '#FFF7ED' : 'white',
-                                  color: formData.tiposCarton.includes(tipo) ? theme.colors.accent : theme.colors.textSecondary,
-                                  fontWeight: 600,
-                                  cursor: 'pointer',
-                                  transition: 'all 0.2s'
-                                }}
-                              >
-                                {tipo}
-                              </button>
-                            ))}
-                          </div>
-                          <p style={{ fontSize: 12, color: '#6B7280', marginTop: 8 }}>
-                            12C: Ligero | 14C: Medio | 17C: General | 20C: Pesado
-                          </p>
+                      {/* Tipo de cartón y onda para Planchas y Cajas */}
+                      {(formData.producto === 'planchas' || formData.producto === 'cajas') && (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
+                          <MultiSelectDropdown
+                            label="Tipo de cartón"
+                            placeholder="Selecciona uno o varios"
+                            options={TIPO_OPTIONS}
+                            selected={formData.tiposCarton}
+                            onChange={(next) => setFormData(prev => ({ ...prev, tiposCarton: next }))}
+                          />
+                          <MultiSelectDropdown
+                            label="Onda"
+                            placeholder="Selecciona una o varias"
+                            options={ONDA_OPTIONS}
+                            selected={formData.ondas}
+                            onChange={(next) => setFormData(prev => ({ ...prev, ondas: next }))}
+                          />
                         </div>
                       )}
 
@@ -1072,21 +1199,23 @@ export default function TecnocartonLanding() {
                           value={formData.detalle}
                           onChange={handleInputChange}
                         />
-                        {/* Imagen de ejemplo de medidas: aparece debajo del textarea, dentro del recuadro blanco */}
-                        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12, marginBottom: 8 }}>
-                          <img
-                            src="/MEDIDAS.png"
-                            alt="Ejemplo medidas"
-                            loading="lazy"
-                            style={{
-                              maxWidth: 260,
-                              width: '40%',
-                              minWidth: 140,
-                              borderRadius: 8,
-                              boxShadow: '0 6px 18px rgba(0,0,0,0.08)'
-                            }}
-                          />
-                        </div>
+                        {/* Imagen de ejemplo de medidas: solo para cajas a medida */}
+                        {formData.producto === 'cajas' && (
+                          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12, marginBottom: 8 }}>
+                            <img
+                              src="/MEDIDAS.png"
+                              alt="Ejemplo medidas"
+                              loading="lazy"
+                              style={{
+                                maxWidth: 260,
+                                width: '40%',
+                                minWidth: 140,
+                                borderRadius: 8,
+                                boxShadow: '0 6px 18px rgba(0,0,0,0.08)'
+                              }}
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div className="form-buttons" style={{ display: 'flex', gap: 16, marginTop: 32 }}>
@@ -1097,7 +1226,18 @@ export default function TecnocartonLanding() {
                       <button
                         className="btn-primary"
                         style={{ flex: 1 }}
-                        onClick={() => setActiveStep(2)}
+                        onClick={() => {
+                          // Requiere seleccionar un rango de cantidad
+                          if (!formData.cantidad) {
+                            setFormErrors(prev => ({
+                              ...prev,
+                              cantidad: 'Selecciona un rango de cantidad'
+                            }));
+                            return;
+                          }
+                          setFormErrors(prev => ({ ...prev, cantidad: null }));
+                          setActiveStep(2);
+                        }}
                       >
                         Continuar
                       </button>
