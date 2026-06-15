@@ -86,6 +86,9 @@ export async function POST(request) {
     const tiposCarton = Array.isArray(body.tiposCarton)
       ? body.tiposCarton.map(t => sanitizeInput(t)).slice(0, 10)
       : [];
+    const ondas = Array.isArray(body.ondas)
+      ? body.ondas.map(o => sanitizeInput(o)).slice(0, 10)
+      : [];
     const formatosRollo = Array.isArray(body.formatosRollo)
       ? body.formatosRollo.map(f => sanitizeInput(f)).slice(0, 10)
       : [];
@@ -126,11 +129,19 @@ export async function POST(request) {
 
     // Formatear especificaciones segun producto
     let especificaciones = '';
-    if (producto === 'planchas' && tiposCarton && tiposCarton.length > 0) {
-      especificaciones = `<div class="field">
-          <span class="field-label">Tipos de carton:</span>
+    if (producto === 'planchas' || producto === 'cajas') {
+      if (tiposCarton && tiposCarton.length > 0) {
+        especificaciones += `<div class="field">
+          <span class="field-label">Tipo de carton:</span>
           <span class="field-value">${tiposCarton.join(', ')}</span>
         </div>`;
+      }
+      if (ondas && ondas.length > 0) {
+        especificaciones += `<div class="field">
+          <span class="field-label">Onda:</span>
+          <span class="field-value">${ondas.join(', ')}</span>
+        </div>`;
+      }
     } else if (producto === 'rollos' && formatosRollo && formatosRollo.length > 0) {
       especificaciones = `<div class="field">
           <span class="field-label">Formatos de rollo:</span>
