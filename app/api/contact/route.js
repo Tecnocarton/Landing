@@ -1,6 +1,8 @@
 import { Resend } from 'resend';
 import Redis from 'ioredis';
 import { siteConfig, products } from '../../../config/site';
+import { appendQuoteToSheet } from '../../../lib/sheets';
+import { buildSheetRow } from '../../../lib/sheetRow.mjs';
 import fs from 'fs';
 import path from 'path';
 
@@ -26,6 +28,19 @@ function sanitizeInput(str) {
 function sanitizePhone(phone) {
   if (typeof phone !== 'string') return '';
   return phone.replace(/[^\d\s\-+()]/g, '').slice(0, 20);
+}
+
+// Revierte sanitizeInput() para escribir texto plano legible en Google Sheets.
+// El orden importa: &amp; se resuelve al final. appendRow guarda texto plano
+// (sin interpretar HTML), por lo que no reintroduce riesgo de inyección.
+function unescapeHtml(str) {
+  if (typeof str !== 'string') return '';
+  return str
+    .replace(/&#x27;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&gt;/g, '>')
+    .replace(/&lt;/g, '<')
+    .replace(/&amp;/g, '&');
 }
 
 // Conexion a Redis (produccion)
@@ -93,6 +108,13 @@ export async function POST(request) {
       ? body.formatosRollo.map(f => sanitizeInput(f)).slice(0, 10)
       : [];
     const detalle = sanitizeInput(body.detalle || '');
+    // Campos del asistente de cajas de stock (opcionales)
+    const cajaStock = sanitizeInput(body.cajaStock || '');
+    const cajaDimsProducto = sanitizeInput(body.cajaDimsProducto || '');
+    const cajaCantidadProductos = sanitizeInput(body.cajaCantidadProductos || '');
+    const cajaUnidadesPorCaja = sanitizeInput(body.cajaUnidadesPorCaja || '');
+    const cajaCantidadCajas = sanitizeInput(body.cajaCantidadCajas || '');
+    const empaqueModo = sanitizeInput(body.empaqueModo || '');
     const empresa = sanitizeInput(body.empresa || '');
     const email = sanitizeInput(body.email || '').toLowerCase();
     const telefono = sanitizePhone(body.telefono || '');
@@ -129,6 +151,32 @@ export async function POST(request) {
 
     // Formatear especificaciones segun producto
     let especificaciones = '';
+
+    // Caja de stock sugerida por el asistente (solo cajas)
+    if (producto === 'cajas' && cajaStock) {
+      const modoLabel = empaqueModo === 'single' ? '1 producto por caja' : 'varios productos por caja';
+      especificaciones += `<div class="field">
+          <span class="field-label">Caja de stock sugerida:</span>
+          <span class="highlight">${cajaStock}</span>
+        </div>`;
+      if (cajaDimsProducto) {
+        especificaciones += `<div class="field">
+          <span class="field-label">Producto a encajar:</span>
+          <span class="field-value">${cajaDimsProducto}${cajaCantidadProductos ? ` &middot; ${cajaCantidadProductos} u.` : ''}</span>
+        </div>`;
+      }
+      especificaciones += `<div class="field">
+          <span class="field-label">Empaque:</span>
+          <span class="field-value">${cajaUnidadesPorCaja ? `~${cajaUnidadesPorCaja} u./caja &middot; ` : ''}${modoLabel}</span>
+        </div>`;
+      if (cajaCantidadCajas) {
+        especificaciones += `<div class="field">
+          <span class="field-label">Cajas estimadas:</span>
+          <span class="field-value">${cajaCantidadCajas}</span>
+        </div>`;
+      }
+    }
+
     if (producto === 'planchas' || producto === 'cajas') {
       if (tiposCarton && tiposCarton.length > 0) {
         especificaciones += `<div class="field">
@@ -150,7 +198,8 @@ export async function POST(request) {
     }
 
     // Preparar el email
-    const emailSubject = `Cotizacion #${quoteNumber} - ${productName} - ${empresa}`;
+    const cajaStockTag = (producto === 'cajas' && cajaStock) ? ` (${cajaStock})` : '';
+    const emailSubject = `Cotizacion #${quoteNumber} - ${productName}${cajaStockTag} - ${empresa}`;
 
     const emailHtml = `
 <!DOCTYPE html>
@@ -222,29 +271,70 @@ export async function POST(request) {
 </html>
     `.trim();
 
-    // Enviar email con Resend
-    const { data, error } = await resend.emails.send({
-      from: 'Tecnocarton Web <cotizaciones@tecnocarton.cl>',
-      to: [siteConfig.form.recipientEmail],
-      replyTo: email,
-      subject: emailSubject,
-      html: emailHtml,
-    });
+    // Fila para la planilla. El orden de columnas es el contrato con el Apps
+    // Script (ver lib/sheetRow.mjs y docs/google-sheets-cotizaciones.md).
+    // unescapeHtml revierte el saneado para que la planilla guarde texto legible.
+    const sheetRow = buildSheetRow(
+      {
+        producto,
+        cantidad: unescapeHtml(cantidad),
+        tiposCarton: tiposCarton.map(unescapeHtml),
+        ondas: ondas.map(unescapeHtml),
+        formatosRollo: formatosRollo.map(unescapeHtml),
+        detalle: unescapeHtml(detalle),
+        cajaStock: unescapeHtml(cajaStock),
+        cajaDimsProducto: unescapeHtml(cajaDimsProducto),
+        cajaCantidadProductos: unescapeHtml(cajaCantidadProductos),
+        cajaUnidadesPorCaja: unescapeHtml(cajaUnidadesPorCaja),
+        cajaCantidadCajas: unescapeHtml(cajaCantidadCajas),
+        empaqueModo: unescapeHtml(empaqueModo),
+        empresa: unescapeHtml(empresa),
+        email: unescapeHtml(email),
+        telefono, // ya es texto plano
+      },
+      { productName: unescapeHtml(productName), quoteNumber }
+    );
 
-    if (error) {
-      console.error('Error al enviar email:', error);
+    // Email y planilla en paralelo, no en cadena: si Resend falla, el lead debe
+    // quedar registrado igual (antes el `return 500` ocurría ANTES de escribir
+    // en la planilla y la cotización se perdía por completo).
+    const [emailResult, sheetResult] = await Promise.allSettled([
+      resend.emails.send({
+        from: 'Tecnocarton Web <cotizaciones@tecnocarton.cl>',
+        to: [siteConfig.form.recipientEmail],
+        replyTo: email,
+        subject: emailSubject,
+        html: emailHtml,
+      }),
+      appendQuoteToSheet(sheetRow),
+    ]);
+
+    const sheetOk = sheetResult.status === 'fulfilled' && sheetResult.value?.ok;
+    const emailData = emailResult.status === 'fulfilled' ? emailResult.value?.data : null;
+    const emailError =
+      emailResult.status === 'rejected' ? emailResult.reason : emailResult.value?.error;
+
+    // El status HTTP lo decide solo el email: es el canal que el vendedor mira.
+    if (emailError || !emailData) {
+      console.error('Error al enviar email:', emailError);
+      if (sheetOk) {
+        console.error(
+          `Email FALLIDO pero la cotizacion #${quoteNumber} quedó en la planilla, fila ${sheetResult.value.row}. ` +
+            'Si el cliente reintenta puede generarse una fila duplicada con otro N° de cotizacion.'
+        );
+      }
       return Response.json(
         { success: false, message: 'Error al enviar el email' },
         { status: 500 }
       );
     }
 
-    console.log('Email enviado exitosamente:', data.id);
+    console.log('Email enviado exitosamente:', emailData.id);
 
     return Response.json({
       success: true,
       message: 'Cotizacion enviada correctamente',
-      emailId: data.id,
+      emailId: emailData.id,
       quoteNumber: quoteNumber
     });
 

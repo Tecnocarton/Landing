@@ -1,14 +1,25 @@
 import { siteConfig } from '../config/site';
 import Script from 'next/script';
-import Analytics from '../components/Analytics';
+import WhatsAppButton from '../components/WhatsAppButton';
+import SiteHeader from '../components/sections/SiteHeader';
+import JsonLd from '../components/seo/JsonLd';
+import { SITE_URL, organizationJsonLd, localBusinessJsonLd } from '../lib/seo';
+import { dmSans, plusJakarta } from './fonts';
 import './globals.css';
+import '../components/landing.css';
 
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
-const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID;
+// Fallback al nombre antiguo de la env var (era el measurement ID de Firebase) para no romper Vercel
+const GA_MEASUREMENT_ID =
+  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID;
 const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
 
 export const metadata = {
-  title: siteConfig.seo.title,
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: siteConfig.seo.title,
+    template: `%s | ${siteConfig.company.name}`,
+  },
   description: siteConfig.seo.description,
   keywords: siteConfig.seo.keywords,
   authors: [{ name: siteConfig.company.name }],
@@ -16,15 +27,17 @@ export const metadata = {
   openGraph: {
     title: siteConfig.seo.title,
     description: siteConfig.seo.description,
-    url: 'https://tecnocarton.cl',
+    url: SITE_URL,
     siteName: siteConfig.company.name,
     locale: 'es_CL',
     type: 'website',
+    images: [siteConfig.seo.ogImage],
   },
   twitter: {
     card: 'summary_large_image',
     title: siteConfig.seo.title,
     description: siteConfig.seo.description,
+    images: [siteConfig.seo.ogImage],
   },
   robots: {
     index: true,
@@ -44,16 +57,13 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="es">
+    <html lang="es" className={`${dmSans.variable} ${plusJakarta.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-
-        {/* Google Tag Manager - beforeInteractive para carga temprana */}
+        {/* Google Tag Manager */}
         {GTM_ID && (
           <Script
             id="gtm-script"
-            strategy="beforeInteractive"
+            strategy="afterInteractive"
             dangerouslySetInnerHTML={{
               __html: `
                 (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -66,17 +76,17 @@ export default function RootLayout({ children }) {
           />
         )}
 
-        {/* Google Analytics 4 - gtag.js */}
+        {/* Google Analytics 4 - gtag.js. Si el contenedor GTM también dispara GA4, eliminar este bloque para no duplicar page_views */}
         {GA_MEASUREMENT_ID && (
           <>
             <Script
               id="ga-script"
-              strategy="beforeInteractive"
+              strategy="afterInteractive"
               src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
             />
             <Script
               id="ga-config"
-              strategy="beforeInteractive"
+              strategy="afterInteractive"
               dangerouslySetInnerHTML={{
                 __html: `
                   window.dataLayer = window.dataLayer || [];
@@ -102,8 +112,12 @@ export default function RootLayout({ children }) {
             />
           </noscript>
         )}
-        {children}
-        <Analytics />
+        <a href="#main-content" className="skip-link">Saltar al contenido principal</a>
+        <SiteHeader />
+        <main id="main-content">{children}</main>
+        <WhatsAppButton />
+        <JsonLd data={organizationJsonLd()} />
+        <JsonLd data={localBusinessJsonLd()} />
       </body>
     </html>
   );
