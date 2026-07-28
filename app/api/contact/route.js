@@ -331,6 +331,16 @@ export async function POST(request) {
 
     console.log('Email enviado exitosamente:', emailData.id);
 
+    // El email salió pero la planilla no: el lead existe solo en el correo. Se
+    // deja el N° de cotización a mano para poder agregar la fila manualmente.
+    // El detalle del fallo lo escribe lib/sheets.js justo antes de esta línea.
+    if (!sheetOk) {
+      console.error(
+        `Cotizacion #${quoteNumber} NO quedó registrada en la planilla (el email sí se envió). ` +
+          'Revisa el log de Sheets inmediatamente anterior para la causa.'
+      );
+    }
+
     return Response.json({
       success: true,
       message: 'Cotizacion enviada correctamente',

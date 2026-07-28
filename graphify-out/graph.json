@@ -214,8 +214,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_cajas_stock_page",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 6,
+      "community_name": "Box Finder Tool",
       "norm_label": "cajas-stock/page.js"
     },
     {
@@ -225,8 +225,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "app_cajas_stock_page_metadata",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 6,
+      "community_name": "Box Finder Tool",
       "norm_label": "metadata"
     },
     {
@@ -236,8 +236,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "app_cajas_stock_page_page",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 6,
+      "community_name": "Box Finder Tool",
       "norm_label": "page()"
     },
     {
@@ -335,8 +335,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_industrias_slug_page",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 8,
+      "community_name": "Build Config & Dev Dependencies",
       "norm_label": "industrias/[slug]/page.js"
     },
     {
@@ -346,8 +346,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "app_industrias_slug_page_generatestaticparams",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 8,
+      "community_name": "Build Config & Dev Dependencies",
       "norm_label": "generatestaticparams()"
     },
     {
@@ -357,8 +357,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "app_industrias_slug_page_generatemetadata",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 8,
+      "community_name": "Build Config & Dev Dependencies",
       "norm_label": "generatemetadata()"
     },
     {
@@ -368,8 +368,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "app_industrias_slug_page_page",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 8,
+      "community_name": "Build Config & Dev Dependencies",
       "norm_label": "page()"
     },
     {
@@ -379,8 +379,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_industrias_page",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 8,
+      "community_name": "Build Config & Dev Dependencies",
       "norm_label": "industrias/page.js"
     },
     {
@@ -390,8 +390,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "app_industrias_page_metadata",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 8,
+      "community_name": "Build Config & Dev Dependencies",
       "norm_label": "metadata"
     },
     {
@@ -401,8 +401,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "app_industrias_page_page",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 8,
+      "community_name": "Build Config & Dev Dependencies",
       "norm_label": "page()"
     },
     {
@@ -456,8 +456,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_nosotros_page",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 2,
+      "community_name": "Landing Page Core Component",
       "norm_label": "nosotros/page.js"
     },
     {
@@ -467,8 +467,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "app_nosotros_page_metadata",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 2,
+      "community_name": "Landing Page Core Component",
       "norm_label": "metadata"
     },
     {
@@ -478,8 +478,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "app_nosotros_page_truststats",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 2,
+      "community_name": "Landing Page Core Component",
       "norm_label": "truststats"
     },
     {
@@ -489,8 +489,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "app_nosotros_page_verticalpillars",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 2,
+      "community_name": "Landing Page Core Component",
       "norm_label": "verticalpillars"
     },
     {
@@ -500,8 +500,8 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "app_nosotros_page_qualityicons",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 2,
+      "community_name": "Landing Page Core Component",
       "norm_label": "qualityicons"
     },
     {
@@ -511,8 +511,8 @@
       "source_location": "L62",
       "_origin": "ast",
       "id": "app_nosotros_page_sustainabilityicons",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 2,
+      "community_name": "Landing Page Core Component",
       "norm_label": "sustainabilityicons"
     },
     {
@@ -522,8 +522,8 @@
       "source_location": "L69",
       "_origin": "ast",
       "id": "app_nosotros_page_aboutpagejsonld",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 2,
+      "community_name": "Landing Page Core Component",
       "norm_label": "aboutpagejsonld"
     },
     {
@@ -533,8 +533,8 @@
       "source_location": "L95",
       "_origin": "ast",
       "id": "app_nosotros_page_page",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 2,
+      "community_name": "Landing Page Core Component",
       "norm_label": "page()"
     },
     {
@@ -698,8 +698,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_sitemap",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 8,
+      "community_name": "Build Config & Dev Dependencies",
       "norm_label": "sitemap.js"
     },
     {
@@ -709,8 +709,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "app_sitemap_staticroutes",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 8,
+      "community_name": "Build Config & Dev Dependencies",
       "norm_label": "staticroutes"
     },
     {
@@ -720,8 +720,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "app_sitemap_sitemap",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 8,
+      "community_name": "Build Config & Dev Dependencies",
       "norm_label": "sitemap()"
     },
     {
@@ -962,8 +962,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_sections_cajasstockfinder",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 6,
+      "community_name": "Box Finder Tool",
       "norm_label": "cajasstockfinder.jsx"
     },
     {
@@ -973,8 +973,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "components_sections_cajasstockfinder_cajasstockfinder",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 6,
+      "community_name": "Box Finder Tool",
       "norm_label": "cajasstockfinder()"
     },
     {
@@ -1116,8 +1116,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_sections_quotewizard",
-      "community": 6,
-      "community_name": "Box Finder Tool",
+      "community": 7,
+      "community_name": "Careers Page & Ads Analytics",
       "norm_label": "quotewizard.jsx"
     },
     {
@@ -1127,8 +1127,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "components_sections_quotewizard_tipo_options",
-      "community": 6,
-      "community_name": "Box Finder Tool",
+      "community": 7,
+      "community_name": "Careers Page & Ads Analytics",
       "norm_label": "tipo_options"
     },
     {
@@ -1138,8 +1138,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "components_sections_quotewizard_onda_options",
-      "community": 6,
-      "community_name": "Box Finder Tool",
+      "community": 7,
+      "community_name": "Careers Page & Ads Analytics",
       "norm_label": "onda_options"
     },
     {
@@ -1149,8 +1149,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "components_sections_quotewizard_multiselectdropdown",
-      "community": 6,
-      "community_name": "Box Finder Tool",
+      "community": 7,
+      "community_name": "Careers Page & Ads Analytics",
       "norm_label": "multiselectdropdown"
     },
     {
@@ -1160,8 +1160,8 @@
       "source_location": "L162",
       "_origin": "ast",
       "id": "components_sections_quotewizard_valid_products",
-      "community": 6,
-      "community_name": "Box Finder Tool",
+      "community": 7,
+      "community_name": "Careers Page & Ads Analytics",
       "norm_label": "valid_products"
     },
     {
@@ -1171,8 +1171,8 @@
       "source_location": "L165",
       "_origin": "ast",
       "id": "components_sections_quotewizard_empty_form",
-      "community": 6,
-      "community_name": "Box Finder Tool",
+      "community": 7,
+      "community_name": "Careers Page & Ads Analytics",
       "norm_label": "empty_form"
     },
     {
@@ -1182,8 +1182,8 @@
       "source_location": "L185",
       "_origin": "ast",
       "id": "components_sections_quotewizard_quotewizard",
-      "community": 6,
-      "community_name": "Box Finder Tool",
+      "community": 7,
+      "community_name": "Careers Page & Ads Analytics",
       "norm_label": "quotewizard()"
     },
     {
@@ -1248,8 +1248,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_seo_jsonld",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 8,
+      "community_name": "Build Config & Dev Dependencies",
       "norm_label": "jsonld.jsx"
     },
     {
@@ -1259,8 +1259,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "components_seo_jsonld_jsonld",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 8,
+      "community_name": "Build Config & Dev Dependencies",
       "norm_label": "jsonld()"
     },
     {
@@ -1600,8 +1600,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "config_industrias",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 8,
+      "community_name": "Build Config & Dev Dependencies",
       "norm_label": "industrias.js"
     },
     {
@@ -1611,8 +1611,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "config_industrias_producto",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 8,
+      "community_name": "Build Config & Dev Dependencies",
       "norm_label": "producto"
     },
     {
@@ -1622,8 +1622,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "config_industrias_casoporindustria",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 8,
+      "community_name": "Build Config & Dev Dependencies",
       "norm_label": "casoporindustria()"
     },
     {
@@ -1633,8 +1633,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "config_industrias_industrias",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 8,
+      "community_name": "Build Config & Dev Dependencies",
       "norm_label": "industrias"
     },
     {
@@ -1644,8 +1644,8 @@
       "source_location": "L235",
       "_origin": "ast",
       "id": "config_industrias_getindustria",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 8,
+      "community_name": "Build Config & Dev Dependencies",
       "norm_label": "getindustria()"
     },
     {
@@ -1765,8 +1765,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "config_site",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 2,
+      "community_name": "Landing Page Core Component",
       "norm_label": "site.js"
     },
     {
@@ -1776,8 +1776,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "config_site_siteconfig",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 2,
+      "community_name": "Landing Page Core Component",
       "norm_label": "siteconfig"
     },
     {
@@ -1787,8 +1787,8 @@
       "source_location": "L108",
       "_origin": "ast",
       "id": "config_site_formatminorder",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 2,
+      "community_name": "Landing Page Core Component",
       "norm_label": "formatminorder()"
     },
     {
@@ -1798,8 +1798,8 @@
       "source_location": "L110",
       "_origin": "ast",
       "id": "config_site_products",
-      "community": 6,
-      "community_name": "Box Finder Tool",
+      "community": 7,
+      "community_name": "Careers Page & Ads Analytics",
       "norm_label": "products"
     },
     {
@@ -1809,8 +1809,8 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "config_site_quantityranges",
-      "community": 6,
-      "community_name": "Box Finder Tool",
+      "community": 7,
+      "community_name": "Careers Page & Ads Analytics",
       "norm_label": "quantityranges"
     },
     {
@@ -1820,8 +1820,8 @@
       "source_location": "L159",
       "_origin": "ast",
       "id": "config_site_cardboardtypes",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 2,
+      "community_name": "Landing Page Core Component",
       "norm_label": "cardboardtypes"
     },
     {
@@ -1842,8 +1842,8 @@
       "source_location": "L175",
       "_origin": "ast",
       "id": "config_site_sustainability",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 2,
+      "community_name": "Landing Page Core Component",
       "norm_label": "sustainability"
     },
     {
@@ -1853,8 +1853,8 @@
       "source_location": "L253",
       "_origin": "ast",
       "id": "config_site_casestudies",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 8,
+      "community_name": "Build Config & Dev Dependencies",
       "norm_label": "casestudies"
     },
     {
@@ -1875,8 +1875,8 @@
       "source_location": "L303",
       "_origin": "ast",
       "id": "config_site_getclientlogo",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 2,
+      "community_name": "Landing Page Core Component",
       "norm_label": "getclientlogo()"
     },
     {
@@ -1886,8 +1886,8 @@
       "source_location": "L307",
       "_origin": "ast",
       "id": "config_site_qualitycertifications",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 2,
+      "community_name": "Landing Page Core Component",
       "norm_label": "qualitycertifications"
     },
     {
@@ -1908,8 +1908,8 @@
       "source_location": "L362",
       "_origin": "ast",
       "id": "config_site_availablepositions",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 2,
+      "community_name": "Landing Page Core Component",
       "norm_label": "availablepositions"
     },
     {
@@ -1941,8 +1941,8 @@
       "source_location": "L387",
       "_origin": "ast",
       "id": "config_site_footerlinks",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 2,
+      "community_name": "Landing Page Core Component",
       "norm_label": "footerlinks"
     },
     {
@@ -1952,8 +1952,8 @@
       "source_location": "L396",
       "_origin": "ast",
       "id": "config_site_theme",
-      "community": 2,
-      "community_name": "Landing Page Core Component",
+      "community": 8,
+      "community_name": "Build Config & Dev Dependencies",
       "norm_label": "theme"
     },
     {
@@ -2392,8 +2392,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_quotespecs",
-      "community": 6,
-      "community_name": "Box Finder Tool",
+      "community": 7,
+      "community_name": "Careers Page & Ads Analytics",
       "norm_label": "quotespecs.mjs"
     },
     {
@@ -2403,8 +2403,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "lib_quotespecs_validatespecs",
-      "community": 6,
-      "community_name": "Box Finder Tool",
+      "community": 7,
+      "community_name": "Careers Page & Ads Analytics",
       "norm_label": "validatespecs()"
     },
     {
@@ -2414,8 +2414,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_quotespecs_test",
-      "community": 6,
-      "community_name": "Box Finder Tool",
+      "community": 7,
+      "community_name": "Careers Page & Ads Analytics",
       "norm_label": "quotespecs.test.mjs"
     },
     {
@@ -2425,8 +2425,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "lib_quotespecs_test_cajascompleto",
-      "community": 6,
-      "community_name": "Box Finder Tool",
+      "community": 7,
+      "community_name": "Careers Page & Ads Analytics",
       "norm_label": "cajascompleto"
     },
     {
@@ -2436,8 +2436,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "lib_quotespecs_test_planchascompleto",
-      "community": 6,
-      "community_name": "Box Finder Tool",
+      "community": 7,
+      "community_name": "Careers Page & Ads Analytics",
       "norm_label": "planchascompleto"
     },
     {
@@ -2447,8 +2447,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "lib_quotespecs_test_rolloscompleto",
-      "community": 6,
-      "community_name": "Box Finder Tool",
+      "community": 7,
+      "community_name": "Careers Page & Ads Analytics",
       "norm_label": "rolloscompleto"
     },
     {
@@ -2469,8 +2469,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "lib_seo_buildmetadata",
-      "community": 10,
-      "community_name": "layout.js",
+      "community": 8,
+      "community_name": "Build Config & Dev Dependencies",
       "norm_label": "buildmetadata()"
     },
     {
@@ -2617,10 +2617,21 @@
       "norm_label": "sheets.js"
     },
     {
+      "label": "configFingerprint()",
+      "file_type": "code",
+      "source_file": "lib/sheets.js",
+      "source_location": "L41",
+      "_origin": "ast",
+      "id": "lib_sheets_configfingerprint",
+      "community": 13,
+      "community_name": "Quote Submission API",
+      "norm_label": "configfingerprint()"
+    },
+    {
       "label": "appendQuoteToSheet()",
       "file_type": "code",
       "source_file": "lib/sheets.js",
-      "source_location": "L26",
+      "source_location": "L50",
       "_origin": "ast",
       "id": "lib_sheets_appendquotetosheet",
       "community": 13,
@@ -11758,11 +11769,34 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "lib/sheets.js",
-      "source_location": "L26",
+      "source_location": "L50",
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_sheets",
       "target": "lib_sheets_appendquotetosheet",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/sheets.js",
+      "source_location": "L41",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_sheets",
+      "target": "lib_sheets_configfingerprint",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/sheets.js",
+      "source_location": "L95",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_sheets_appendquotetosheet",
+      "target": "lib_sheets_configfingerprint",
       "confidence_score": 1.0
     },
     {
@@ -13939,5 +13973,5 @@
       "source_file": "README.md"
     }
   ],
-  "built_at_commit": "dd36e2743cb7bfcc76c652d4e366ee5e5308a9aa"
+  "built_at_commit": "ba3af30bf928e40d8cd95888ee9efd5b24a42834"
 }

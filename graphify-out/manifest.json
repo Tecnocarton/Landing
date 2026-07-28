@@ -5,8 +5,8 @@
     "semantic_hash": "4463e143c50ad360d9d457477dd2854c"
   },
   "app/api/contact/route.js": {
-    "mtime": 1785194917.0972044,
-    "ast_hash": "41e81da661621476a86d45952685bf2b",
+    "mtime": 1785264511.1691115,
+    "ast_hash": "bfcbe4f6694c0c426a66548630f3107d",
     "semantic_hash": ""
   },
   "app/api/postulacion/route.js": {
@@ -365,8 +365,8 @@
     "semantic_hash": ""
   },
   "components/sections/Hero.jsx": {
-    "mtime": 1784909919.045294,
-    "ast_hash": "76055d603b02d20e8d0445bc8b677850",
+    "mtime": 1785258580.991637,
+    "ast_hash": "2ae3cd2d50eb70989e6cafd2ca456726",
     "semantic_hash": ""
   },
   "components/sections/Nav.jsx": {
@@ -410,8 +410,8 @@
     "semantic_hash": ""
   },
   "lib/sheets.js": {
-    "mtime": 1785194893.3896246,
-    "ast_hash": "427f7b2f4090c07ba56a796cd3005050",
+    "mtime": 1785264501.659138,
+    "ast_hash": "e0769f48e34e763fb2aaa31fe2f2c30a",
     "semantic_hash": ""
   },
   "docs/google-sheets-cotizaciones.md": {

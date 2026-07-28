@@ -1,11 +1,11 @@
-# Graph Report - Landing  (2026-07-27)
+# Graph Report - Landing  (2026-07-28)
 
 ## Corpus Check
-- 88 files · ~109,488 words
+- 91 files · ~110,814 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 415 nodes · 766 edges · 31 communities (14 shown, 17 thin omitted)
+- 423 nodes · 779 edges · 32 communities (15 shown, 17 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 7 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
@@ -26,6 +26,7 @@
 - Build Config & Dev Dependencies
 - Animation Presets
 - layout.js
+- seo.js
 - layout.js
 - Quote Submission API
 - Box Measurement Diagram & Config
@@ -48,7 +49,7 @@
 
 ## God Nodes (most connected - your core abstractions)
 1. `siteConfig` - 20 edges
-2. `theme` - 16 edges
+2. `theme` - 17 edges
 3. `Tecnocarton Landing (Project)` - 15 edges
 4. `Graphify Skill (Codex)` - 14 edges
 5. `buildMetadata()` - 12 edges
@@ -65,10 +66,10 @@
   AGENTS.md → CLAUDE.md
 - `MEDIDAS.png (Box Dimensions Diagram)` --illustrates_dimension_convention_used_by--> `Medidas INTERNAS (largo x ancho x alto) convention in stock box config`  [EXTRACTED]
   public/MEDIDAS.png → config/stockBoxes.js
-- `QuoteWizard()` --indirect_call--> `unitsPerBox()`  [INFERRED]
-  components/sections/QuoteWizard.jsx → lib/boxFinder.mjs
 - `Root CLAUDE.md Graphify Integration Rules` --conceptually_related_to--> `Graphify Skill (Codex)`  [AMBIGUOUS]
   CLAUDE.md → .codex/skills/graphify/SKILL.md
+- `BloqueContacto()` --calls--> `formatHours()`  [EXTRACTED]
+  app/catalogo/page.js → lib/hours.mjs
 
 ## Import Cycles
 - None detected.
@@ -78,7 +79,7 @@
 - **Landing Redesign Documentation Set (Plans + Specs)** — docs_superpowers_plans_2026_05_04_refactor_landing_refactorlandingplan, docs_superpowers_plans_2026_05_04_ux_ui_landing_uxuilandingplan, docs_superpowers_specs_2026_05_04_refactor_ux_landing_design_refactoruxlandingdesignspec, docs_superpowers_specs_2026_05_04_ux_ui_landing_design_uxuilandingdesignspec [INFERRED 0.90]
 - **Quote Submission Data Flow** — readme_componentslandingjsx, readme_apicontactroute, readme_redis, readme_resendapi [EXTRACTED 1.00]
 
-## Communities (31 total, 17 thin omitted)
+## Communities (32 total, 17 thin omitted)
 
 ### Community 0 - "Landing UI Components & Refactor Plan"
 Cohesion: 0.07
@@ -89,36 +90,40 @@ Cohesion: 0.06
 Nodes (37): Add & Watch Reference, /graphify add command, --watch folder watcher, Exports & Benchmark Reference, FalkorDB Export, MCP stdio Server, Neo4j Export, Token Reduction Benchmark (+29 more)
 
 ### Community 2 - "Landing Page Core Component"
-Cohesion: 0.11
-Nodes (20): POST(), resend, sanitizeInput(), sanitizePhone(), carouselImages, Hero(), StatCard, Nav() (+12 more)
+Cohesion: 0.10
+Nodes (26): CaseStudies(), ClientsCarousel(), carouselImages, Hero(), StatCard, Nav(), Products(), LINKS (+18 more)
 
 ### Community 3 - "NPM Dependencies"
 Cohesion: 0.05
 Nodes (38): autoprefixer, clsx, framer-motion, ioredis, lucide-react, next, dependencies, clsx (+30 more)
 
 ### Community 4 - "API Layout & Analytics"
-Cohesion: 0.08
-Nodes (32): metadata, metadata, metadata, getProcessIcon(), getSustainabilityIcon(), Proceso(), scaleIn, staggerContainer (+24 more)
+Cohesion: 0.11
+Nodes (15): metadata, metadata, getProcessIcon(), getSustainabilityIcon(), Proceso(), scaleIn, staggerContainer, benefits (+7 more)
 
 ### Community 5 - "Proceso (Process) Page"
 Cohesion: 0.18
 Nodes (10): 1. Preparar la planilla, 2. Crear el Apps Script, 3. Desplegar como Web App, 4. Configurar variables de entorno, Columnas de la planilla (orden exacto, fila 1), Comportamiento, Configuración (una sola vez), Dónde escribe (+2 more)
 
 ### Community 6 - "Box Finder Tool"
-Cohesion: 0.18
-Nodes (17): metadata, BoxFinder(), fmt(), inputStyle(), labelStyle, CajasStockFinder(), products, stockBoxes (+9 more)
+Cohesion: 0.12
+Nodes (26): BoxFinder(), fmt(), inputStyle(), labelStyle, EMPTY_FORM, MultiSelectDropdown, ONDA_OPTIONS, QuoteWizard() (+18 more)
 
 ### Community 7 - "Careers Page & Ads Analytics"
-Cohesion: 0.10
-Nodes (31): BloqueContacto(), CatalogoDownload(), EMPTY_FORM, MultiSelectDropdown, ONDA_OPTIONS, QuoteWizard(), TIPO_OPTIONS, VALID_PRODUCTS (+23 more)
+Cohesion: 0.15
+Nodes (22): CatalogoDownload(), WhatsAppIcon(), WhatsAppButton(), WhatsAppQuoteButton(), GOOGLE_ADS_CONVERSIONS, pushToDataLayer(), trackContactClick(), trackCotizacionEnviada() (+14 more)
 
 ### Community 8 - "Build Config & Dev Dependencies"
-Cohesion: 0.13
-Nodes (21): indice, metadata, Page(), generateMetadata(), Page(), SpecTable(), catalogoCopy, ejes (+13 more)
+Cohesion: 0.11
+Nodes (24): indice, metadata, Page(), metadata, generateMetadata(), Page(), SharedFooter(), BetaBadge() (+16 more)
 
 ### Community 10 - "layout.js"
 Cohesion: 0.07
-Nodes (27): dmSans, plusJakarta, generateMetadata(), Page(), metadata, RootLayout(), viewport, aboutPageJsonLd (+19 more)
+Nodes (29): POST(), resend, sanitizeInput(), sanitizePhone(), metadata, metadata, generateMetadata(), Page() (+21 more)
+
+### Community 11 - "seo.js"
+Cohesion: 0.18
+Nodes (11): BloqueContacto(), dmSans, plusJakarta, metadata, RootLayout(), viewport, formatHours(), openingHoursSpecification() (+3 more)
 
 ### Community 12 - "layout.js"
 Cohesion: 0.22
@@ -141,7 +146,7 @@ Nodes (6): Medidas INTERNAS (largo x ancho x alto) convention in stock box confi
   docs/superpowers/specs/2026-05-04-refactor-ux-landing-design.md · relation: conceptually_related_to
 
 ## Knowledge Gaps
-- **143 isolated node(s):** `resend`, `COUNTER_FILE`, `resend`, `metadata`, `metadata` (+138 more)
+- **146 isolated node(s):** `resend`, `COUNTER_FILE`, `resend`, `metadata`, `metadata` (+141 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **17 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -154,11 +159,11 @@ _Questions this graph is uniquely positioned to answer:_
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
 - **What is the exact relationship between `Refactor Progresivo Landing Plan` and `Form Step 0 validation fix (disabled button)`?**
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
-- **Why does `siteConfig` connect `Landing Page Core Component` to `API Layout & Analytics`, `Box Finder Tool`, `Careers Page & Ads Analytics`, `Build Config & Dev Dependencies`, `layout.js`, `Quote Submission API`?**
-  _High betweenness centrality (0.047) - this node is a cross-community bridge._
-- **Why does `theme` connect `API Layout & Analytics` to `Landing Page Core Component`, `Box Finder Tool`, `Careers Page & Ads Analytics`, `Build Config & Dev Dependencies`, `layout.js`?**
-  _High betweenness centrality (0.016) - this node is a cross-community bridge._
+- **Why does `siteConfig` connect `layout.js` to `Landing Page Core Component`, `API Layout & Analytics`, `Box Finder Tool`, `Careers Page & Ads Analytics`, `Build Config & Dev Dependencies`, `seo.js`, `Quote Submission API`?**
+  _High betweenness centrality (0.049) - this node is a cross-community bridge._
+- **Why does `theme` connect `Landing Page Core Component` to `Build Config & Dev Dependencies`, `layout.js`, `API Layout & Analytics`, `Box Finder Tool`?**
+  _High betweenness centrality (0.017) - this node is a cross-community bridge._
+- **Why does `products` connect `Box Finder Tool` to `Landing Page Core Component`, `Careers Page & Ads Analytics`, `Build Config & Dev Dependencies`, `layout.js`, `Quote Submission API`?**
+  _High betweenness centrality (0.010) - this node is a cross-community bridge._
 - **What connects `resend`, `COUNTER_FILE`, `resend` to the rest of the system?**
-  _143 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Landing UI Components & Refactor Plan` be split into smaller, more focused modules?**
-  _Cohesion score 0.07073170731707316 - nodes in this community are weakly interconnected._
+  _146 weakly-connected nodes found - possible documentation gaps or missing edges._
