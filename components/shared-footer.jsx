@@ -2,21 +2,14 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { siteConfig, products, footerLinks, theme } from '../config/site';
-import './landing.css';
+import { siteConfig, footerLinks, theme } from '../config/site';
+import { productos as fichas } from '../config/productos';
+import { fadeInUp, staggerContainer } from '../lib/motion';
 
-const fadeInUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0 }
-};
-
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: 0.1 }
-  }
-};
+// Fichas técnicas (/productos) y catálogo (/catalogo): contenido en BETA, aún en
+// revisión. Sin el flag esas rutas hacen notFound(), así que la columna de
+// productos del footer no se arma para no dejar enlaces rotos.
+const FICHAS_BETA = process.env.NEXT_PUBLIC_ENABLE_FICHAS_BETA === 'true';
 
 export default function SharedFooter() {
   const currentYear = new Date().getFullYear();
@@ -89,13 +82,17 @@ export default function SharedFooter() {
             </div>
           </div>
 
-          {/* Products */}
-          <div>
-            <h5 style={{ fontWeight: 700, marginBottom: 20, color: theme.colors.accent }}>Productos</h5>
-            {products.map((product, i) => (
-              <Link key={i} href="/#productos" className="footer-link">{product.name}</Link>
-            ))}
-          </div>
+          {/* Products (solo con las fichas en BETA activas) */}
+          {FICHAS_BETA && (
+            <div>
+              <h5 style={{ fontWeight: 700, marginBottom: 20, color: theme.colors.accent }}>Productos</h5>
+              {fichas.map((p) => (
+                <Link key={p.slug} href={`/productos/${p.slug}`} className="footer-link">{p.nombre}</Link>
+              ))}
+              <Link href="/productos" className="footer-link">Ver todos los productos</Link>
+              <Link href="/catalogo" className="footer-link">Catálogo descargable</Link>
+            </div>
+          )}
 
           {/* Company */}
           <div>

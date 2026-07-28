@@ -1,20 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Link from 'next/link';
 import { TrendingUp, Users, Shield } from 'lucide-react';
 import { siteConfig, jobOffers, theme } from '../config/site';
 import { trackPostulacionEnviada } from '../lib/analytics';
 import SharedFooter from './shared-footer';
 import { SectionBeams } from './ui/section-beams';
-import './landing.css';
+import { fadeInUp } from '../lib/motion';
 
-// Animation variants
-const fadeInUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0 }
-};
+// Animation variants (valores propios de esta página: stagger/scale distintos al landing)
 
 const staggerContainer = {
   hidden: { opacity: 0 },
@@ -61,14 +56,6 @@ export default function TrabajaConNosotros() {
   const [formErrors, setFormErrors] = useState({});
   const [formStatus, setFormStatus] = useState({ loading: false, success: false, error: null });
   const [selectedOffer, setSelectedOffer] = useState(null);
-  const [scrolled, setScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const activeOffers = jobOffers.filter(offer => offer.active);
 
@@ -142,7 +129,7 @@ export default function TrabajaConNosotros() {
   };
 
   return (
-    <div style={{ fontFamily: "'DM Sans', 'Segoe UI', system-ui, sans-serif", minHeight: '100vh', background: '#F8FAFB' }}>
+    <div style={{ minHeight: '100vh', background: '#F8FAFB' }}>
       <style dangerouslySetInnerHTML={{ __html: `
         .file-input-wrapper {
           position: relative;
@@ -173,64 +160,6 @@ export default function TrabajaConNosotros() {
           .form-card { padding: 16px !important; }
         }
       ` }} />
-
-      {/* Navigation */}
-      <motion.nav
-        className="nav-shimmer"
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 1000,
-          background: '#FEFEFE',
-          boxShadow: scrolled ? '0 2px 20px rgba(0,0,0,0.1)' : '0 1px 3px rgba(0,0,0,0.05)',
-          transition: 'box-shadow 0.3s'
-        }}
-      >
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
-            <img
-              src={siteConfig.company.logo}
-              alt={siteConfig.company.name}
-              style={{ height: 72, width: 'auto', objectFit: 'contain' }}
-            />
-          </Link>
-
-          {/* Desktop Navigation */}
-          <div className="desktop-nav">
-            <Link href="/proceso" className="nav-link">Proceso</Link>
-            <Link href="/trabaja-con-nosotros" className="nav-link" style={{ background: 'rgba(46,106,128,0.08)' }}>Trabaja con Nosotros</Link>
-            <Link href="/#cotizar" className="btn-primary desktop-nav-cta" style={{ textDecoration: 'none' }}>
-              Cotizar Ahora
-            </Link>
-          </div>
-
-          {/* Hamburger */}
-          <button
-            className={`hamburger always-visible ${isMenuOpen ? 'open' : ''}`}
-            onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }}
-            aria-label={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
-            aria-expanded={isMenuOpen}
-          >
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-          </button>
-
-          {/* Mobile Menu */}
-          <nav className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
-            <Link href="/proceso" onClick={() => setIsMenuOpen(false)} className="nav-link">Proceso</Link>
-            <Link href="/trabaja-con-nosotros" onClick={() => setIsMenuOpen(false)} className="nav-link">Trabaja con Nosotros</Link>
-            <Link href="/#cotizar" onClick={() => setIsMenuOpen(false)} className="btn-primary" style={{ textAlign: 'center', textDecoration: 'none', marginTop: 8 }}>
-              Cotizar Ahora
-            </Link>
-          </nav>
-        </div>
-      </motion.nav>
 
       {/* Hero */}
       <section style={{

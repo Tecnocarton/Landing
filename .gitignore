@@ -35,6 +35,7 @@ Thumbs.db
 *.log
 .vercel
 .claude
+.graphifyignore
 
 # Quote counter (local persistence)
 .quote-counter
