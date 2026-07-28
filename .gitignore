@@ -39,3 +39,4 @@ Thumbs.db
 
 # Quote counter (local persistence)
 .quote-counter
+.env*

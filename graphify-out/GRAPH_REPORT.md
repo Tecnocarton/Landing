@@ -1,16 +1,16 @@
 # Graph Report - Landing  (2026-07-28)
 
 ## Corpus Check
-- 91 files · ~110,814 words
+- 91 files · ~111,279 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 423 nodes · 779 edges · 32 communities (15 shown, 17 thin omitted)
+- 424 nodes · 781 edges · 32 communities (15 shown, 17 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 7 edges (avg confidence: 0.87)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `dd36e274`
+- Built from commit: `ba3af30b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -66,10 +66,10 @@
   AGENTS.md → CLAUDE.md
 - `MEDIDAS.png (Box Dimensions Diagram)` --illustrates_dimension_convention_used_by--> `Medidas INTERNAS (largo x ancho x alto) convention in stock box config`  [EXTRACTED]
   public/MEDIDAS.png → config/stockBoxes.js
+- `QuoteWizard()` --indirect_call--> `unitsPerBox()`  [INFERRED]
+  components/sections/QuoteWizard.jsx → lib/boxFinder.mjs
 - `Root CLAUDE.md Graphify Integration Rules` --conceptually_related_to--> `Graphify Skill (Codex)`  [AMBIGUOUS]
   CLAUDE.md → .codex/skills/graphify/SKILL.md
-- `BloqueContacto()` --calls--> `formatHours()`  [EXTRACTED]
-  app/catalogo/page.js → lib/hours.mjs
 
 ## Import Cycles
 - None detected.
@@ -90,8 +90,8 @@ Cohesion: 0.06
 Nodes (37): Add & Watch Reference, /graphify add command, --watch folder watcher, Exports & Benchmark Reference, FalkorDB Export, MCP stdio Server, Neo4j Export, Token Reduction Benchmark (+29 more)
 
 ### Community 2 - "Landing Page Core Component"
-Cohesion: 0.10
-Nodes (26): CaseStudies(), ClientsCarousel(), carouselImages, Hero(), StatCard, Nav(), Products(), LINKS (+18 more)
+Cohesion: 0.07
+Nodes (38): aboutPageJsonLd, metadata, qualityIcons, sustainabilityIcons, trustStats, verticalPillars, CaseStudies(), ClientsCarousel() (+30 more)
 
 ### Community 3 - "NPM Dependencies"
 Cohesion: 0.05
@@ -106,20 +106,20 @@ Cohesion: 0.18
 Nodes (10): 1. Preparar la planilla, 2. Crear el Apps Script, 3. Desplegar como Web App, 4. Configurar variables de entorno, Columnas de la planilla (orden exacto, fila 1), Comportamiento, Configuración (una sola vez), Dónde escribe (+2 more)
 
 ### Community 6 - "Box Finder Tool"
-Cohesion: 0.12
-Nodes (26): BoxFinder(), fmt(), inputStyle(), labelStyle, EMPTY_FORM, MultiSelectDropdown, ONDA_OPTIONS, QuoteWizard() (+18 more)
+Cohesion: 0.19
+Nodes (16): metadata, BoxFinder(), fmt(), inputStyle(), labelStyle, CajasStockFinder(), stockBoxes, fitsInBox() (+8 more)
 
 ### Community 7 - "Careers Page & Ads Analytics"
-Cohesion: 0.15
-Nodes (22): CatalogoDownload(), WhatsAppIcon(), WhatsAppButton(), WhatsAppQuoteButton(), GOOGLE_ADS_CONVERSIONS, pushToDataLayer(), trackContactClick(), trackCotizacionEnviada() (+14 more)
+Cohesion: 0.09
+Nodes (34): CatalogoDownload(), EMPTY_FORM, MultiSelectDropdown, ONDA_OPTIONS, QuoteWizard(), TIPO_OPTIONS, VALID_PRODUCTS, WhatsAppIcon() (+26 more)
 
 ### Community 8 - "Build Config & Dev Dependencies"
-Cohesion: 0.11
-Nodes (24): indice, metadata, Page(), metadata, generateMetadata(), Page(), SharedFooter(), BetaBadge() (+16 more)
+Cohesion: 0.08
+Nodes (35): indice, metadata, Page(), metadata, generateMetadata(), Page(), metadata, generateMetadata() (+27 more)
 
 ### Community 10 - "layout.js"
-Cohesion: 0.07
-Nodes (29): POST(), resend, sanitizeInput(), sanitizePhone(), metadata, metadata, generateMetadata(), Page() (+21 more)
+Cohesion: 0.60
+Nodes (4): POST(), resend, sanitizeInput(), sanitizePhone()
 
 ### Community 11 - "seo.js"
 Cohesion: 0.18
@@ -130,8 +130,8 @@ Cohesion: 0.22
 Nodes (8): 1. Calificación por volumen en la landing (on-page), 2. Estructura SEM (Google Ads), 3. Lista de keywords negativas (filtrar B2C / no calificado), 4. SEO orgánico orientado a B2B, 5. Medición de calificación, Problema, Reestructuración SEM/SEO + landing B2B — Tecnocartón, Resumen de cambios en el sitio que soportan esto
 
 ### Community 13 - "Quote Submission API"
-Cohesion: 0.18
-Nodes (17): COUNTER_FILE, getNextQuoteNumber(), getRedisClient(), POST(), resend, sanitizeInput(), sanitizePhone(), unescapeHtml() (+9 more)
+Cohesion: 0.17
+Nodes (18): COUNTER_FILE, getNextQuoteNumber(), getRedisClient(), POST(), resend, sanitizeInput(), sanitizePhone(), unescapeHtml() (+10 more)
 
 ### Community 15 - "Box Measurement Diagram & Config"
 Cohesion: 0.33
@@ -159,11 +159,11 @@ _Questions this graph is uniquely positioned to answer:_
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
 - **What is the exact relationship between `Refactor Progresivo Landing Plan` and `Form Step 0 validation fix (disabled button)`?**
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
-- **Why does `siteConfig` connect `layout.js` to `Landing Page Core Component`, `API Layout & Analytics`, `Box Finder Tool`, `Careers Page & Ads Analytics`, `Build Config & Dev Dependencies`, `seo.js`, `Quote Submission API`?**
-  _High betweenness centrality (0.049) - this node is a cross-community bridge._
-- **Why does `theme` connect `Landing Page Core Component` to `Build Config & Dev Dependencies`, `layout.js`, `API Layout & Analytics`, `Box Finder Tool`?**
+- **Why does `siteConfig` connect `Landing Page Core Component` to `API Layout & Analytics`, `Box Finder Tool`, `Careers Page & Ads Analytics`, `Build Config & Dev Dependencies`, `layout.js`, `seo.js`, `Quote Submission API`?**
+  _High betweenness centrality (0.050) - this node is a cross-community bridge._
+- **Why does `theme` connect `Build Config & Dev Dependencies` to `Landing Page Core Component`, `API Layout & Analytics`, `Box Finder Tool`, `Careers Page & Ads Analytics`?**
   _High betweenness centrality (0.017) - this node is a cross-community bridge._
-- **Why does `products` connect `Box Finder Tool` to `Landing Page Core Component`, `Careers Page & Ads Analytics`, `Build Config & Dev Dependencies`, `layout.js`, `Quote Submission API`?**
+- **Why does `products` connect `Careers Page & Ads Analytics` to `Build Config & Dev Dependencies`, `Landing Page Core Component`, `Quote Submission API`, `Box Finder Tool`?**
   _High betweenness centrality (0.010) - this node is a cross-community bridge._
 - **What connects `resend`, `COUNTER_FILE`, `resend` to the rest of the system?**
   _146 weakly-connected nodes found - possible documentation gaps or missing edges._
